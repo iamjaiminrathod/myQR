@@ -3,243 +3,566 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR Master | Premium UI</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { 
-            primary: '#4f46e5', // Elegant Indigo
-            secondary: '#ec4899', // Pink
-          },
-          fontFamily: { 
-            sans: ['Inter', 'sans-serif'],
-            heading: ['Montserrat', 'sans-serif']
-          },
-          boxShadow: { 
-            'glass': '0 10px 40px -10px rgba(0,0,0,0.05)',
-            'premium-card': '0 4px 20px -2px rgba(0,0,0,0.03), 0 0 3px rgba(0,0,0,0.02)',
-            'input-focus': '0 0 0 3px rgba(79, 70, 229, 0.15)'
-          }
-        }
-      }
-    }
-  </script>
+  <title>QR Master | jaimin.web</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  
+  <style>
+    /* ================= CSS VARIABLES ================= */
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #ec4899;
+    }
 
-  <style type="text/tailwindcss">
+    /* ================= RESET & GLOBAL ================= */
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+    
     html, body {
-      /* Fix for horizontal bounce but allows normal vertical scroll */
       max-width: 100vw;
       overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      scrollbar-width: none; /* Disable scrollbar space on Windows */
     }
 
     body {
       background-color: #f8fafc;
-      background-image: radial-gradient(circle at top right, #e0e7ff 0%, transparent 40%), radial-gradient(circle at bottom left, #fce7f3 0%, transparent 40%);
+      background-image: radial-gradient(circle at top right, #e0e7ff 0%, transparent 40%), 
+                        radial-gradient(circle at bottom left, #fce7f3 0%, transparent 40%);
       background-attachment: fixed;
-      /* Protect Content from being copied */
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem;
       -webkit-user-select: none;
       user-select: none;
     }
-    
-    /* Allow text selection ONLY in input fields and textareas */
+    @media (min-width: 640px) { body { padding: 2rem; } }
+
     input, textarea, select {
       -webkit-user-select: text !important;
       user-select: text !important;
+      font-family: inherit;
     }
 
-    /* Prevent image dragging and interaction on QR Code canvas to block saving */
+    button { 
+      font-family: inherit; 
+      cursor: pointer; 
+      border: none; 
+      background: none; 
+      outline: none; 
+    }
+    button:focus { outline: none; }
+    
     img, svg, canvas { -webkit-user-drag: none; }
-    #qr-preview-wrapper canvas, #qr-preview-wrapper svg { pointer-events: none; }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 1);
-    }
     .hide { display: none !important; }
-    
-    /* Scanner overrides for perfect fit */
-    #reader { width: 100%; min-height: 320px; border: none !important; border-radius: 1.5rem; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; background: #f1f5f9; }
-    #reader video { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 1.5rem; }
-    #reader canvas { display: none !important; }
-    #reader__scan_region { background: transparent; z-index: 10; width: 100%; height: 100%; }
-    #reader__dashboard_section_csr span, #reader__dashboard_section_swaplink { display: none !important; }
-    
-    /* Smooth Tab Indicator Transition */
-    #tab-indicator { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    
-    /* Global scrollbar for app */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-    /* --- DATA TYPES LAYOUT STYLES --- */
-    
-    /* Fix active colors so SVG goes perfectly white! */
-    .type-btn.active i, .type-btn.active svg { color: #ffffff !important; }
-
-    /* Hide scrollbars for Scroll View */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* Scroll View Classes */
-    .view-scroll { 
-      display: flex; 
-      overflow-x: auto; 
-      scroll-snap-type: x mandatory; 
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
+    /* ================= HEADER ================= */
+    .header {
+      width: 100%; max-width: 64rem; 
+      display: flex; justify-content: center; align-items: center;
+      margin-top: 0.5rem; margin-bottom: 1.5rem;
     }
+    @media (min-width: 640px) { .header { margin-bottom: 2rem; } }
+
+    .header-content { display: flex; align-items: center; gap: 0.75rem; }
+    
+    .header-icon-box {
+      background: linear-gradient(to top right, var(--primary), var(--secondary));
+      padding: 0.625rem; border-radius: 0.75rem; color: #ffffff;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); pointer-events: none;
+    }
+    .header-icon-box svg { width: 1.5rem; height: 1.5rem; }
+    @media (min-width: 640px) { .header-icon-box svg { width: 1.75rem; height: 1.75rem; } }
+
+    .header-title {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 1.5rem; letter-spacing: -0.025em;
+      background: linear-gradient(to right, #0f172a, #475569);
+      -webkit-background-clip: text; color: transparent;
+    }
+    @media (min-width: 640px) { .header-title { font-size: 1.875rem; } }
+
+    /* ================= MAIN CONTAINER ================= */
+    .glass-card {
+      width: 100%; max-width: 64rem;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid #ffffff; border-radius: 2rem;
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+      padding: 1rem; display: flex; flex-direction: column; position: relative;
+    }
+    @media (min-width: 640px) { .glass-card { padding: 2rem; } }
+
+    /* ================= TABS ================= */
+    .tabs-container {
+      position: relative; display: flex; width: 100%; max-width: 24rem;
+      margin: 0 auto 2rem; padding: 0.25rem; border-radius: 0.75rem;
+      background-color: rgba(241, 245, 249, 0.5);
+      border: 1px solid rgba(226, 232, 240, 0.5);
+    }
+    .tab-btn {
+      flex: 1; text-align: center; padding: 0.625rem 0;
+      display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+      font-size: 0.875rem; font-weight: 600; color: #64748b;
+      position: relative; z-index: 10; transition: color 0.3s;
+    }
+    .tab-btn:hover { color: #334155; }
+    .tab-btn.active { color: var(--primary); }
+    .tab-btn svg { width: 1rem; height: 1rem; }
+    
+    .tab-indicator {
+      position: absolute; top: 0.25rem; bottom: 0.25rem; left: 0.25rem;
+      background-color: #ffffff; border-radius: 0.5rem;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
+      z-index: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ================= LAYOUT GRID ================= */
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+    
+    .col-left { display: flex; flex-direction: column; gap: 1.5rem; }
+    .col-right { display: flex; flex-direction: column; align-items: center; }
+
+    @media (min-width: 640px) { .content-grid { gap: 2.5rem; } }
+    @media (min-width: 1024px) {
+      .content-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+      .col-left { grid-column: span 7 / span 7; }
+      .col-right { grid-column: span 5 / span 5; }
+    }
+
+    /* ================= CATEGORY BUTTONS ================= */
+    .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0 0.25rem; }
+    .category-label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .view-toggle {
+      color: #64748b; background: #ffffff; border: 1px solid #e2e8f0;
+      padding: 0.375rem 0.625rem; border-radius: 0.5rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+      display: flex; align-items: center; gap: 0.375rem;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em;
+      transition: color 0.2s;
+    }
+    .view-toggle:hover { color: var(--primary); }
+    .view-toggle svg { width: 0.875rem; height: 0.875rem; }
+
+    .type-btn {
+      background-color: #ffffff; color: #475569; border: 1px solid #e2e8f0;
+      padding: 0.625rem; border-radius: 0.75rem;
+      font-size: 10px; font-weight: 500;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+      
+      /* FIX: Transition is only on colors/shadows. NO 'width' or 'all' to stop shrink/grow bug */
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    @media (min-width: 640px) { .type-btn { font-size: 0.75rem; } }
+    .type-btn:hover { background-color: #f8fafc; }
+    .type-btn.active {
+      background-color: var(--primary); color: #ffffff; border-color: transparent;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -2px rgba(79, 70, 229, 0.2);
+      font-weight: 600;
+    }
+    .type-btn svg { width: 1.25rem; height: 1.25rem; pointer-events: none; }
+    .type-btn.active svg { color: #ffffff !important; }
+
+    .view-scroll {
+      display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; scroll-behavior: smooth; gap: 0.625rem;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .view-scroll::-webkit-scrollbar { display: none; }
     .view-scroll .type-btn { flex: 0 0 auto; width: 76px; scroll-snap-align: start; }
     @media (min-width: 640px) { .view-scroll .type-btn { width: 86px; } }
 
-    /* Grid View Classes - Butter Smooth iOS Scroll */
-    .view-grid { 
-      display: grid; 
-      grid-template-columns: repeat(3, minmax(0, 1fr)); 
-      max-height: 220px; 
-      overflow-y: auto; 
-      -webkit-overflow-scrolling: touch; /* Momentum scrolling on iOS */
-      scroll-behavior: smooth;
-      padding-bottom: 24px;
+    .view-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem;
+      max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth; padding-bottom: 1.5rem;
     }
     @media (min-width: 640px) { .view-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
     @media (min-width: 768px) { .view-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
     .view-grid .type-btn { width: 100%; }
-
-    /* Custom elegant scrollbar for the Grid View to make it feel premium */
+    
     .view-grid::-webkit-scrollbar { width: 4px; }
     .view-grid::-webkit-scrollbar-track { background: transparent; }
     .view-grid::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 10px; }
+
+    .fade-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2.5rem;
+      background: linear-gradient(to top, #ffffff, transparent);
+      pointer-events: none; transition: opacity 0.3s;
+    }
+
+    .scroll-hint { display: flex; align-items: center; justify-content: center; margin-top: 0.75rem; transition: opacity 0.3s; }
+    .scroll-hint-inner {
+      display: flex; align-items: center; gap: 0.625rem; padding: 0.375rem 1rem;
+      background-color: #ffffff; border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); border-radius: 9999px;
+    }
+    .scroll-hint-inner svg { width: 0.875rem; height: 0.875rem; color: var(--primary); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .scroll-hint-inner span { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #64748b; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+    /* ================= PREMIUM CARDS & INPUTS ================= */
+    .premium-card {
+      background-color: #ffffff; padding: 1.25rem; border-radius: 1rem;
+      border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03), 0 0 3px rgba(0,0,0,0.02);
+      position: relative;
+    }
+    @media (min-width: 640px) { .premium-card { padding: 1.5rem; } }
+
+    .card-title-small {
+      display: flex; align-items: center; gap: 0.5rem; font-size: 11px;
+      font-weight: 700; color: #334155; margin-bottom: 1rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .card-title-small span { width: 0.375rem; height: 0.375rem; border-radius: 9999px; background-color: var(--primary); }
+
+    .inputs-wrapper { display: flex; flex-direction: column; gap: 0.875rem; }
+    .input-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+
+    .custom-input {
+      width: 100%; padding: 0.875rem 1rem;
+      border-radius: 0.75rem; border: 1px solid #e2e8f0;
+      background-color: rgba(248, 250, 252, 0.5); color: #1e293b;
+      font-size: 0.875rem; font-weight: 500; outline: none; transition: all 0.2s;
+    }
+    @media (min-width: 640px) {
+      .custom-input { padding: 0.75rem 1rem; font-size: 1rem; }
+    }
+    .custom-input::placeholder { color: #94a3b8; }
+    .custom-input:hover { border-color: #cbd5e1; }
+    .custom-input:focus { background-color: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+
+    .error-box {
+      background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6;
+      padding: 0.625rem 0.75rem; border-radius: 0.75rem; font-size: 0.75rem;
+      font-weight: 700; margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .error-box svg { width: 1rem; height: 1rem; }
+
+    /* ================= DESIGN CUSTOMIZATION ================= */
+    .card-title-icon {
+      font-size: 0.875rem; font-weight: 600; margin-bottom: 1.25rem;
+      color: #1e293b; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .icon-wrap { padding: 0.375rem; background-color: #eef2ff; border-radius: 0.5rem; color: var(--primary); }
+    .icon-wrap svg { width: 1rem; height: 1rem; }
+
+    .design-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (min-width: 640px) { .design-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    
+    .design-label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 0.375rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.025em; }
+    
+    .color-picker {
+      border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden;
+      height: 2.5rem; padding: 0.125rem; background-color: #ffffff; cursor: pointer;
+    }
+    .color-picker input { width: 100%; height: 100%; cursor: pointer; border: none; padding: 0; background-color: transparent; border-radius: 0.5rem; outline: none; }
+
+    .logo-section { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-upload {
+      background-color: #f8fafc; border: 1px dashed #cbd5e1; color: #475569;
+      padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;
+    }
+    .btn-upload:hover { border-color: var(--primary); background-color: #eef2ff; }
+    .btn-upload svg { width: 1rem; height: 1rem; color: var(--primary); }
+    
+    .btn-remove {
+      display: flex; align-items: center; gap: 0.375rem; color: #f43f5e;
+      background-color: #fff1f2; border: 1px solid #ffe4e6;
+      padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 600;
+    }
+    .btn-remove svg { width: 0.875rem; height: 0.875rem; }
+
+    /* ================= LIVE PREVIEW ================= */
+    .preview-card { overflow: hidden; border-radius: 1.5rem; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; width: 100%; }
+    @media (min-width: 640px) { .preview-card { padding: 2rem; } }
+    
+    .preview-top-line { position: absolute; top: 0; left: 0; width: 100%; height: 0.25rem; background: linear-gradient(to right, var(--primary), var(--secondary)); opacity: 0.8; }
+    
+    .preview-title {
+      font-size: 0.75rem; font-weight: 700; color: #94a3b8; margin-bottom: 2rem;
+      text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .status-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; }
+    .status-dot.active { background-color: #34d399; animation: pulse 2s infinite; }
+    .status-dot.inactive { background-color: #cbd5e1; }
+
+    .qr-container {
+      background-color: #ffffff; padding: 0.75rem; border-radius: 1rem;
+      box-shadow: 0 15px 40px -10px rgba(0,0,0,0.1); margin-bottom: 2.5rem;
+      width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid #f8fafc; transition: all 0.5s;
+    }
+    @media (min-width: 640px) { .qr-container { width: 240px; height: 240px; } }
+    .qr-container.disabled { opacity: 0.3; filter: grayscale(100%) blur(2px); }
+    #qr-preview-wrapper canvas, #qr-preview-wrapper svg { pointer-events: none; }
+
+    .dl-controls { width: 100%; max-width: 280px; display: flex; flex-direction: column; gap: 1.25rem; }
+    
+    .format-wrap { display: flex; gap: 0.5rem; background-color: #f8fafc; padding: 0.375rem; border-radius: 0.75rem; border: 1px solid #f1f5f9; }
+    .format-btn {
+      flex: 1; padding: 0.625rem; border-radius: 0.5rem; font-size: 0.875rem;
+      display: flex; justify-content: center; align-items: center; gap: 0.375rem; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; /* FIX: Fixed Size jumping */
+    }
+    .format-btn.active { background-color: #ffffff; color: var(--primary); font-weight: 700; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .format-btn.inactive { background-color: transparent; color: #64748b; font-weight: 600; border: 1px solid transparent;}
+    .format-btn.inactive:hover { color: #334155; }
+
+    .btn-download {
+      width: 100%; margin-top: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+      background-color: var(--primary); color: #ffffff; padding: 1rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 700; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); transition: all 0.2s;
+    }
+    .btn-download:hover:not(.disabled) { background-color: var(--primary-hover); }
+    .btn-download.disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-download svg { width: 1rem; height: 1rem; }
+
+    /* ================= SCANNER SECTION ================= */
+    .scanner-section { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0; width: 100%; max-width: 32rem; margin: 0 auto; position: relative; z-index: 10; }
+    
+    .alert-msg {
+      width: 100%; margin-bottom: 1.25rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+      font-size: 0.875rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    }
+    .alert-msg.error { background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; }
+    .alert-msg.success { background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .alert-msg svg { flex-shrink: 0; width: 1.25rem; height: 1.25rem; }
+
+    .scanner-box { width: 100%; background-color: #ffffff; padding: 0.625rem; border-radius: 2rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+    
+    #reader {
+      width: 100%; min-height: 320px; background-color: rgba(241, 245, 249, 0.8);
+      border-radius: 1.5rem; overflow: hidden; position: relative;
+      border: 1px solid rgba(226, 232, 240, 0.5); display: flex; justify-content: center; align-items: center; color: #94a3b8;
+    }
+    #reader video { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 1.5rem; }
+    #reader canvas { display: none !important; }
+    #reader__scan_region { background: transparent; z-index: 10; width: 100%; height: 100%; }
+    #reader__dashboard_section_csr span, #reader__dashboard_section_swaplink { display: none !important; }
+
+    .cam-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 320px; gap: 1rem; z-index: 20; position: relative; }
+    .cam-icon { padding: 1rem; background-color: #ffffff; border-radius: 9999px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+    .cam-icon svg { width: 2rem; height: 2rem; color: #cbd5e1; }
+    .cam-text { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .cam-controls { display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.25rem; padding: 0 0.75rem 0.75rem; }
+    
+    .btn-cam-start { width: 100%; background-color: var(--primary); color: #ffffff; padding: 0.875rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); transition: background-color 0.2s; }
+    .btn-cam-start:hover { background-color: #4338ca; }
+    .btn-cam-start svg { width: 1.25rem; height: 1.25rem; }
+    
+    .btn-cam-stop { width: 100%; background-color: #1e293b; color: #ffffff; padding: 0.875rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: background-color 0.2s; }
+    .btn-cam-stop:hover { background-color: #0f172a; }
+    .btn-cam-stop svg { width: 1rem; height: 1rem; fill: currentColor; }
+
+    /* ================= SCAN RESULT ================= */
+    .scan-result-box { margin-top: 2rem; width: 100%; padding: 1.25rem; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s; }
+    
+    .res-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; }
+    .res-title { font-size: 0.875rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.025em; }
+    .res-title svg { width: 1.25rem; height: 1.25rem; }
+    
+    .btn-copy { padding: 0.5rem; background-color: #f8fafc; border-radius: 0.5rem; color: #64748b; border: 1px solid #e2e8f0; transition: all 0.2s; }
+    .btn-copy:hover { color: var(--primary); background-color: #eef2ff; }
+    .btn-copy svg { width: 1rem; height: 1rem; }
+    .btn-copy.success { color: var(--primary); }
+
+    .res-content { font-size: 0.875rem; color: #475569; user-select: text; }
+
+    /* JS Injected Result UI */
+    .app-res-box { padding: 1rem; border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.75rem; border: 1px solid; }
+    .app-res-box span { font-size: 0.875rem; font-weight: 700; color: #334155; word-break: break-all; }
+    .app-res-btn { width: 100%; padding: 0.75rem 1.25rem; color: #ffffff; font-size: 0.875rem; font-weight: 700; border-radius: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 0.25rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); text-decoration: none; transition: all 0.2s; outline: none; -webkit-tap-highlight-color: transparent;}
+    .app-res-btn svg { width: 1rem; height: 1rem; }
+
+    .t-upi { background-color: #eef2ff; border-color: #e0e7ff; }
+    .t-upi .l { color: #64748b; font-weight: 600; font-size: 0.875rem; margin-bottom: -0.25rem;}
+    .t-upi .v { font-weight: 900; font-size: 1.125rem; color: #1e293b; }
+    .t-upi .s { font-size: 0.75rem; color: #64748b; font-weight: 500; word-break: break-all; }
+    .t-upi .a { font-weight: 700; font-size: 1.25rem; color: #059669; margin-top: 0.5rem; }
+    .b-upi { background-color: #1ea271; } .b-upi:hover { background-color: #16855b; }
+
+    .t-wa { background-color: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); }
+    .t-wa svg { color: #25D366; width: 2rem; height: 2rem; }
+    .b-wa { background-color: #25D366; } .b-wa:hover { background-color: #128C7E; }
+
+    .t-map { background-color: #eff6ff; border-color: #dbeafe; }
+    .t-map svg { color: #3b82f6; width: 2rem; height: 2rem; }
+    .b-map { background-color: #3b82f6; } .b-map:hover { background-color: #2563eb; }
+
+    .t-yt { background-color: #fef2f2; border-color: #fee2e2; }
+    .t-yt svg { color: #dc2626; width: 2rem; height: 2rem; }
+    .b-yt { background-color: #dc2626; } .b-yt:hover { background-color: #b91c1c; }
+
+    .t-ig { background-color: #fdf2f8; border-color: #fce7f3; }
+    .t-ig svg { color: #db2777; width: 2rem; height: 2rem; }
+    .b-ig { background: linear-gradient(to top right, #fbbf24, #ec4899, #9333ea); } .b-ig:hover { opacity: 0.9; }
+
+    .t-fb { background-color: #eff6ff; border-color: #dbeafe; }
+    .t-fb svg { color: #2563eb; width: 2rem; height: 2rem; }
+    .b-fb { background-color: #1877F2; } .b-fb:hover { background-color: #166fe5; }
+
+    .t-li { background-color: #eff6ff; border-color: #dbeafe; }
+    .t-li svg { color: #1d4ed8; width: 2rem; height: 2rem; }
+    .b-li { background-color: #0A66C2; } .b-li:hover { background-color: #084e96; }
+
+    .t-tg { background-color: #ecfeff; border-color: #cffafe; }
+    .t-tg svg { color: #0891b2; width: 2rem; height: 2rem; }
+    .b-tg { background-color: #229ED9; } .b-tg:hover { background-color: #1c88b9; }
+
+    .t-app { background-color: #f1f5f9; border-color: #e2e8f0; }
+    .t-app svg { color: #1e293b; width: 2rem; height: 2rem; }
+    .b-app { background-color: #1e293b; } .b-app:hover { background-color: #0f172a; }
+
+    .wifi-item { display: flex; justify-content: space-between; align-items: center; padding: 0.875rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px solid #f1f5f9; margin-bottom: 0.5rem; }
+    .wifi-item .l { font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 0.75rem; }
+    .wifi-item .v { font-weight: 700; color: #0f172a; }
+
+    .vcard-wrap { padding: 1rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 0.5rem; }
+    .vcard-wrap .n { font-weight: 900; font-size: 1.125rem; color: #0f172a; }
+    .vcard-wrap .p { font-weight: 600; color: #475569; display: flex; align-items: center; gap: 0.5rem; }
+    .vcard-wrap .p svg { width: 1rem; height: 1rem; color: #94a3b8; }
+
+    .btn-general { width: 100%; margin-top: 0.75rem; padding: 0.75rem 1rem; color: #ffffff; font-size: 0.875rem; font-weight: 700; border-radius: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; text-decoration: none; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.2s; outline: none; -webkit-tap-highlight-color: transparent;}
+    .bg-dark { background-color: #0f172a; } .bg-dark:hover { background-color: #1e293b; }
+    .bg-indigo { background-color: var(--primary); } .bg-indigo:hover { background-color: var(--primary-hover); }
+    .bg-green { background-color: #10b981; } .bg-green:hover { background-color: #059669; }
+
+    .plain-text { padding: 1rem; background-color: #f8fafc; border-radius: 0.75rem; border: 1px solid #f1f5f9; font-weight: 500; color: #334155; word-break: break-all; white-space: pre-wrap; text-align: center; }
+
+    .footer-text { margin: 1.5rem auto; text-align: center; color: #64748b; font-size: 0.875rem; pointer-events: none; }
   </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col items-center p-3 sm:p-8" oncontextmenu="return false;">
+<body>
 
-  <header class="w-full max-w-5xl flex justify-center items-center mb-6 sm:mb-8 mt-2">
-    <div class="flex items-center gap-3">
-      <div class="bg-gradient-to-tr from-primary to-secondary p-2.5 rounded-xl text-white shadow-lg shadow-primary/30 pointer-events-none">
-        <i data-lucide="qr-code" class="w-6 h-6 sm:w-7 sm:h-7"></i>
+  <header class="header">
+    <div class="header-content">
+      <div class="header-icon-box">
+        <i data-lucide="qr-code"></i>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-heading font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">QR Master</h1>
+      <h1 class="header-title">QR Master</h1>
     </div>
   </header>
 
-  <main class="w-full max-w-5xl glass-card rounded-[2rem] shadow-glass p-4 sm:p-8 flex flex-col transition-all relative">
+  <main class="glass-card">
     
-    <div class="relative flex mb-8 bg-slate-100/50 p-1 rounded-xl max-w-sm mx-auto w-full border border-slate-200/50" id="tabs-container">
-      <button id="tab-generator" class="flex-1 text-center py-2.5 flex justify-center items-center gap-2 font-semibold text-primary transition-colors relative z-10 text-sm">
-        <i data-lucide="sparkles" class="w-4 h-4"></i> <span>Generator</span>
+    <div class="tabs-container" id="tabs-container">
+      <button id="tab-generator" class="tab-btn active">
+        <i data-lucide="sparkles"></i> <span>Generator</span>
       </button>
-      <button id="tab-scanner" class="flex-1 text-center py-2.5 flex justify-center items-center gap-2 font-semibold text-slate-500 hover:text-slate-700 transition-colors relative z-10 text-sm">
-        <i data-lucide="scan-line" class="w-4 h-4"></i> <span>Scanner</span>
+      <button id="tab-scanner" class="tab-btn">
+        <i data-lucide="scan-line"></i> <span>Scanner</span>
       </button>
-      <div id="tab-indicator" class="absolute top-1 bottom-1 left-1 bg-white rounded-lg shadow-sm z-0 border border-slate-100"></div>
+      <div id="tab-indicator" class="tab-indicator"></div>
     </div>
 
-    <div id="section-generator" class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
-      <div class="lg:col-span-7 flex flex-col gap-6">
+    <div id="section-generator" class="content-grid">
+      <div class="col-left">
         
         <div>
-          <div class="flex justify-between items-center mb-3 px-1">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Choose Category</label>
-            <button id="toggle-view-btn" class="text-slate-500 hover:text-primary transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg shadow-sm" title="Change Layout View">
-              <i data-lucide="list" id="view-icon" class="w-3.5 h-3.5"></i> <span id="view-text">Scroll</span>
+          <div class="category-header">
+            <label class="category-label">Choose Category</label>
+            <button id="toggle-view-btn" class="view-toggle" title="Change Layout View">
+              <i data-lucide="list" id="view-icon"></i> <span id="view-text">Scroll</span>
             </button>
           </div>
           
-          <div class="relative">
-            <div class="view-grid gap-2.5" id="type-buttons">
-              <button class="type-btn active bg-primary text-white shadow-md shadow-primary/20 p-2.5 rounded-xl text-[10px] sm:text-xs font-semibold transition-all flex flex-col items-center justify-center gap-2 border border-transparent" data-type="url"><i data-lucide="link" class="w-5 h-5 pointer-events-none"></i> URL</button>
+          <div style="position: relative;">
+            <div class="view-grid" id="type-buttons">
+              <button class="type-btn active" data-type="url"><i data-lucide="link"></i> URL</button>
+              <button class="type-btn" data-type="text"><i data-lucide="align-left"></i> Text</button>
+              <button class="type-btn" data-type="vcard"><i data-lucide="contact"></i> vCard</button>
+              <button class="type-btn" data-type="email"><i data-lucide="mail"></i> Email</button>
+              <button class="type-btn" data-type="sms"><i data-lucide="message-square-text"></i> SMS</button>
+              <button class="type-btn" data-type="wifi"><i data-lucide="wifi"></i> WiFi</button>
+              <button class="type-btn" data-type="phone"><i data-lucide="phone"></i> Call</button>
               
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="text"><i data-lucide="align-left" class="w-5 h-5 pointer-events-none"></i> Text</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="vcard"><i data-lucide="contact" class="w-5 h-5 pointer-events-none"></i> vCard</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="email"><i data-lucide="mail" class="w-5 h-5 pointer-events-none"></i> Email</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="sms"><i data-lucide="message-square-text" class="w-5 h-5 pointer-events-none"></i> SMS</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="wifi"><i data-lucide="wifi" class="w-5 h-5 pointer-events-none"></i> WiFi</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="phone"><i data-lucide="phone" class="w-5 h-5 pointer-events-none"></i> Call</button>
+              <button class="type-btn" data-type="whatsapp">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp
+              </button>
+              <button class="type-btn" data-type="upi"><i data-lucide="indian-rupee" style="color:#059669;"></i> UPI</button>
+              <button class="type-btn" data-type="map"><i data-lucide="map-pin" style="color:#3b82f6;"></i> Map</button>
               
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="whatsapp">
-                <svg class="w-5 h-5 pointer-events-none text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp
+              <button class="type-btn" data-type="youtube">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> YouTube
               </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="upi"><i data-lucide="indian-rupee" class="w-5 h-5 pointer-events-none text-emerald-600"></i> UPI</button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="map"><i data-lucide="map-pin" class="w-5 h-5 pointer-events-none text-blue-500"></i> Map</button>
-              
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="youtube">
-                <svg class="w-5 h-5 pointer-events-none text-red-600" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> YouTube
+              <button class="type-btn" data-type="instagram">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg> Instagram
               </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="instagram">
-                <svg class="w-5 h-5 pointer-events-none text-pink-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg> Instagram
+              <button class="type-btn" data-type="facebook">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook
               </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="facebook">
-                <svg class="w-5 h-5 pointer-events-none text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook
+              <button class="type-btn" data-type="linkedin">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn
               </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="linkedin">
-                <svg class="w-5 h-5 pointer-events-none text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn
+              <button class="type-btn" data-type="telegram">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram
               </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="telegram">
-                <svg class="w-5 h-5 pointer-events-none text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram
-              </button>
-              <button class="type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2" data-type="app"><i data-lucide="layout-grid" class="w-5 h-5 pointer-events-none text-slate-700"></i> Apps</button>
+              <button class="type-btn" data-type="app"><i data-lucide="layout-grid" style="color:#334155;"></i> Apps</button>
             </div>
-            
-            <div id="grid-fade" class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent pointer-events-none transition-opacity"></div>
+            <div id="grid-fade" class="fade-overlay hide"></div>
           </div>
           
-          <div id="scroll-hint" class="hide flex items-center justify-center mt-3 transition-opacity duration-300">
-            <div class="flex items-center gap-2.5 px-4 py-1.5 bg-white border border-slate-200 shadow-sm rounded-full">
-              <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-primary animate-pulse"></i>
-              <span class="text-[9px] font-black uppercase tracking-[0.15em] text-slate-500">Swipe to Explore</span>
+          <div id="scroll-hint" class="scroll-hint hide">
+            <div class="scroll-hint-inner">
+              <i data-lucide="move-horizontal"></i>
+              <span>Swipe to Explore</span>
             </div>
           </div>
         </div>
-        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-premium-card relative">
-          <label class="flex items-center gap-2 text-[11px] font-bold text-slate-700 mb-4 uppercase tracking-widest"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Content Details</label>
-          <div id="dynamic-inputs" class="flex flex-col gap-3.5"></div>
-          <div id="input-error-msg" class="text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2.5 rounded-xl text-xs font-bold mt-4 flex items-center gap-2 transition-all">
-            <i data-lucide="info" class="w-4 h-4"></i> <span id="error-msg-text">Please fill in the details.</span>
+        
+        <div class="premium-card">
+          <label class="card-title-small"><span></span> Content Details</label>
+          <div id="dynamic-inputs" class="inputs-wrapper"></div>
+          <div id="input-error-msg" class="error-box hide">
+            <i data-lucide="info"></i> <span id="error-msg-text">Please fill in the details.</span>
           </div>
         </div>
 
-        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-premium-card">
-          <h3 class="text-sm font-semibold mb-5 text-slate-800 flex items-center gap-2">
-            <div class="p-1.5 bg-indigo-50 rounded-lg text-primary"><i data-lucide="palette" class="w-4 h-4"></i></div> Customize Design
+        <div class="premium-card">
+          <h3 class="card-title-icon">
+            <div class="icon-wrap"><i data-lucide="palette"></i></div> Customize Design
           </h3>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <div><label class="block text-[11px] font-semibold mb-1.5 text-slate-500 uppercase tracking-wide">QR Color</label><div class="border border-slate-200 rounded-xl overflow-hidden h-10 p-0.5 bg-white cursor-pointer"><input type="color" id="color-dark" value="#0f172a" class="w-full h-full cursor-pointer border-none p-0 bg-transparent rounded-lg"></div></div>
-            <div><label class="block text-[11px] font-semibold mb-1.5 text-slate-500 uppercase tracking-wide">Background</label><div class="border border-slate-200 rounded-xl overflow-hidden h-10 p-0.5 bg-white cursor-pointer"><input type="color" id="color-light" value="#ffffff" class="w-full h-full cursor-pointer border-none p-0 bg-transparent rounded-lg"></div></div>
-            <div><label class="block text-[11px] font-semibold mb-1.5 text-slate-500 uppercase tracking-wide">Pattern</label><select id="dots-style" class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold cursor-pointer"><option value="square">Square</option><option value="rounded" selected>Rounded</option></select></div>
-            <div><label class="block text-[11px] font-semibold mb-1.5 text-slate-500 uppercase tracking-wide">Corners</label><select id="corners-style" class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold cursor-pointer"><option value="square">Square</option><option value="extra-rounded" selected>Rounded</option></select></div>
+          <div class="design-grid">
+            <div><label class="design-label">QR Color</label><div class="color-picker"><input type="color" id="color-dark" value="#0f172a"></div></div>
+            <div><label class="design-label">Background</label><div class="color-picker"><input type="color" id="color-light" value="#ffffff"></div></div>
+            <div><label class="design-label">Pattern</label><select id="dots-style" class="custom-input" style="padding:0 0.75rem; height:2.5rem;"><option value="square">Square</option><option value="rounded" selected>Rounded</option></select></div>
+            <div><label class="design-label">Corners</label><select id="corners-style" class="custom-input" style="padding:0 0.75rem; height:2.5rem;"><option value="square">Square</option><option value="extra-rounded" selected>Rounded</option></select></div>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold mb-2 text-slate-500 uppercase tracking-wide">Center Logo</label>
-            <div class="flex items-center gap-3">
-              <label class="bg-slate-50 border border-dashed border-slate-300 hover:border-primary hover:bg-indigo-50 text-slate-600 px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-2"><i data-lucide="image-plus" class="w-4 h-4 text-primary"></i> Upload Logo<input type="file" id="logo-input" accept="image/*" class="hidden"></label>
-              <button id="clear-logo" class="hide flex items-center gap-1.5 text-rose-500 bg-rose-50 border border-rose-100 px-4 py-2.5 rounded-xl text-xs font-semibold"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Remove</button>
+            <label class="design-label">Center Logo</label>
+            <div class="logo-section">
+              <label class="btn-upload"><i data-lucide="image-plus"></i> Upload Logo<input type="file" id="logo-input" accept="image/*" class="hide"></label>
+              <button id="clear-logo" class="btn-remove hide"><i data-lucide="trash-2"></i> Remove</button>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="lg:col-span-5 flex flex-col items-center">
-        <div class="w-full bg-white rounded-3xl p-5 sm:p-8 border border-slate-100 shadow-premium-card flex flex-col items-center relative overflow-hidden">
-          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary opacity-80"></div>
-          <h3 class="text-xs font-bold text-slate-400 mb-8 uppercase tracking-widest flex items-center gap-2"><span id="preview-indicator" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Preview</h3>
+      <div class="col-right">
+        <div class="premium-card preview-card">
+          <div class="preview-top-line"></div>
+          <h3 class="preview-title"><span id="preview-indicator" class="status-dot active"></span> Live Preview</h3>
           
-          <div id="qr-preview-wrapper" class="bg-white p-3 rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] mb-10 transition-all duration-500 w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] flex items-center justify-center border border-slate-50 opacity-30 grayscale blur-[2px]"></div>
+          <div id="qr-preview-wrapper" class="qr-container disabled"></div>
 
-          <div class="w-full max-w-[280px] flex flex-col gap-5">
-            <div class="flex flex-col gap-1.5">
-              <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Resolution</label>
-              <select id="qr-size" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-sm font-semibold cursor-pointer">
+          <div class="dl-controls">
+            <div>
+              <label class="design-label" style="margin-bottom:0.375rem;">Resolution</label>
+              <select id="qr-size" class="custom-input">
                 <option value="256">256 x 256 px</option>
                 <option value="512" selected>512 x 512 px (Standard)</option>
                 <option value="1024">1024 x 1024 px</option>
@@ -247,57 +570,56 @@
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Format</label>
-              <div class="flex gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-100"><button id="btn-format-png" class="format-btn active flex-1 py-2.5 rounded-lg bg-white text-primary font-bold flex justify-center items-center gap-1.5 shadow-sm border border-slate-200 text-sm">PNG</button><button id="btn-format-svg" class="format-btn flex-1 py-2.5 rounded-lg bg-transparent text-slate-500 font-semibold flex justify-center items-center gap-1.5 text-sm">SVG</button></div>
+              <label class="design-label" style="margin-bottom:0.375rem;">Format</label>
+              <div class="format-wrap">
+                <button id="btn-format-png" class="format-btn active">PNG</button>
+                <button id="btn-format-svg" class="format-btn inactive">SVG</button>
+              </div>
             </div>
-            <button id="main-download-btn" class="w-full mt-3 flex justify-center items-center gap-2 bg-primary hover:bg-indigo-700 text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/30 transition-all opacity-50 cursor-not-allowed"><i data-lucide="download" class="w-4 h-4"></i> Download QR Code</button>
+            <button id="main-download-btn" class="btn-download disabled"><i data-lucide="download"></i> Download QR Code</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="section-scanner" class="hide flex flex-col items-center py-6 w-full max-w-lg mx-auto relative z-10">
+    <div id="section-scanner" class="scanner-section hide">
       
-      <div id="ui-message" class="hide w-full mb-5 px-5 py-4 rounded-xl text-sm font-semibold flex items-center gap-3 shadow-sm border">
-        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i><span id="ui-message-text"></span>
+      <div id="ui-message" class="alert-msg hide">
+        <i data-lucide="alert-circle"></i><span id="ui-message-text"></span>
       </div>
 
-      <div class="w-full bg-white p-2.5 rounded-[2rem] shadow-glass border border-slate-100">
-        <div id="reader" class="w-full min-h-[320px] bg-slate-100/80 rounded-[1.5rem] text-slate-400 overflow-hidden relative border border-slate-200/50">
-          <span id="camera-placeholder" class="flex flex-col items-center justify-center h-[320px] gap-4 z-20 relative">
-            <div class="p-4 bg-white rounded-full shadow-sm border border-slate-100"><i data-lucide="camera" class="w-8 h-8 text-slate-300"></i></div>
-            <span class="text-xs font-bold uppercase tracking-widest">Camera inactive</span>
-          </span>
+      <div class="scanner-box">
+        <div id="reader">
+          <div id="camera-placeholder" class="cam-placeholder">
+            <div class="cam-icon"><i data-lucide="camera"></i></div>
+            <span class="cam-text">Camera inactive</span>
+          </div>
         </div>
         
-        <div class="flex justify-center gap-3 mt-5 px-3 pb-3">
-          <button id="scan-camera-btn" class="w-full bg-primary text-white py-3.5 rounded-xl text-sm font-bold flex justify-center items-center gap-2 hover:bg-indigo-600 transition-all shadow-md shadow-primary/20">
-            <i data-lucide="video" class="w-5 h-5"></i> Start Scan
-          </button>
-          <button id="stop-camera-btn" class="hide w-full bg-slate-800 text-white py-3.5 rounded-xl text-sm font-bold flex justify-center items-center gap-2 hover:bg-slate-900 transition-all shadow-md">
-            <i data-lucide="square" class="w-4 h-4 fill-current"></i> Stop
-          </button>
+        <div class="cam-controls">
+          <button id="scan-camera-btn" class="btn-cam-start"><i data-lucide="video"></i> Start Scan</button>
+          <button id="stop-camera-btn" class="btn-cam-stop hide"><i data-lucide="square"></i> Stop</button>
         </div>
       </div>
 
-      <div id="scan-result-container" class="hide mt-8 w-full p-5 bg-white border border-slate-200 rounded-2xl shadow-premium-card transition-all">
-        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-           <h4 id="scan-type-label" class="text-sm font-extrabold text-primary flex items-center gap-2 uppercase tracking-wide">
-             <i data-lucide="check-circle-2" class="w-5 h-5"></i> Scan Successful
+      <div id="scan-result-container" class="scan-result-box hide">
+        <div class="res-header">
+           <h4 id="scan-type-label" class="res-title">
+             <i data-lucide="check-circle-2"></i> Scan Successful
            </h4>
-           <button id="copy-result-btn" class="p-2 bg-slate-50 rounded-lg text-slate-500 hover:text-primary hover:bg-indigo-50 transition-colors border border-slate-200" title="Copy Data">
-             <i data-lucide="copy" class="w-4 h-4"></i>
+           <button id="copy-result-btn" class="btn-copy" title="Copy Data">
+             <i data-lucide="copy"></i>
            </button>
         </div>
         
-        <div id="scan-rich-content" class="text-sm text-slate-600 space-y-2 select-text"></div>
-        <textarea id="raw-scan-data" class="hidden"></textarea>
+        <div id="scan-rich-content" class="res-content"></div>
+        <textarea id="raw-scan-data" class="hide"></textarea>
       </div>
     </div>
 
   </main>
 
-  <footer class="w-full max-w-5xl mx-auto mt-6 mb-6 text-center text-slate-500 text-sm pointer-events-none">
+  <footer class="footer-text">
     © 2026 QR Master — Built by jaimin.web
   </footer>
 
@@ -309,15 +631,18 @@
     const sections = { gen: document.getElementById('section-generator'), scan: document.getElementById('section-scanner') };
     const indicator = document.getElementById('tab-indicator');
 
-    const updateIndicator = (activeTab) => { indicator.style.width = `${activeTab.offsetWidth}px`; indicator.style.left = `${activeTab.offsetLeft}px`; };
+    const updateIndicator = (activeTab) => { 
+        indicator.style.width = `${activeTab.offsetWidth}px`; 
+        indicator.style.left = `${activeTab.offsetLeft}px`; 
+    };
     window.addEventListener('load', () => updateIndicator(tabs.gen));
     window.addEventListener('resize', () => { updateIndicator(!sections.scan.classList.contains('hide') ? tabs.scan : tabs.gen); });
 
     const switchTab = (tabName) => {
       Object.values(sections).forEach(sec => sec.classList.add('hide'));
-      Object.values(tabs).forEach(tab => tab.classList.replace('text-primary', 'text-slate-500'));
+      Object.values(tabs).forEach(tab => tab.classList.remove('active'));
       sections[tabName].classList.remove('hide');
-      tabs[tabName].classList.replace('text-slate-500', 'text-primary');
+      tabs[tabName].classList.add('active');
       updateIndicator(tabs[tabName]);
       if (tabName !== 'scan') stopScanner();
     };
@@ -326,7 +651,7 @@
     tabs.scan.addEventListener('click', () => switchTab('scan'));
 
     // ================= View Toggle Logic (Grid/Scroll) =================
-    let isGridView = true; // Grid is default now!
+    let isGridView = true; 
     const typeButtonsContainer = document.getElementById('type-buttons');
     const toggleViewBtn = document.getElementById('toggle-view-btn');
     const viewIcon = document.getElementById('view-icon');
@@ -338,14 +663,12 @@
       isGridView = !isGridView;
       if (isGridView) {
         typeButtonsContainer.classList.replace('view-scroll', 'view-grid');
-        typeButtonsContainer.classList.remove('no-scrollbar');
         viewIcon.setAttribute('data-lucide', 'list');
         viewText.textContent = 'Scroll';
         scrollHint.classList.add('hide');
         gridFade.classList.remove('hide');
       } else {
         typeButtonsContainer.classList.replace('view-grid', 'view-scroll');
-        typeButtonsContainer.classList.add('no-scrollbar');
         viewIcon.setAttribute('data-lucide', 'layout-grid');
         viewText.textContent = 'Grid';
         scrollHint.classList.remove('hide');
@@ -354,32 +677,29 @@
       lucide.createIcons();
     });
 
-
     // ================= Generator Logic =================
     const PREVIEW_SIZE = 220; 
     const qrOptions = { width: PREVIEW_SIZE, height: PREVIEW_SIZE, data: "https://qrmaster.com", margin: 5, imageOptions: { hideBackgroundDots: true, imageSize: 0.4, margin: 5 }, dotsOptions: { color: "#0f172a", type: "rounded" }, backgroundOptions: { color: "#ffffff" }, cornersSquareOptions: { color: "#0f172a", type: "extra-rounded" }, cornersDotOptions: { color: "#0f172a", type: "dot" } };
     const qrCode = new QRCodeStyling(qrOptions);
     qrCode.append(document.getElementById("qr-preview-wrapper"));
 
-    const inputClass = "w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs sm:text-sm hover:border-slate-300 focus:bg-white focus:border-primary focus:ring-[3px] focus:ring-indigo-100 outline-none transition-all placeholder:text-slate-400 font-medium";
-
     const inputTemplates = {
-      url: `<input type="url" id="val-url" placeholder="Website URL" class="${inputClass}" maxlength="2048">`,
-      text: `<textarea id="val-text" placeholder="Enter your text..." class="${inputClass}" rows="3" maxlength="500"></textarea>`,
-      email: `<input type="email" id="val-email" placeholder="Email Address" class="${inputClass}" maxlength="255"><input type="text" id="val-sub" placeholder="Subject" class="${inputClass}" maxlength="100"><textarea id="val-body" placeholder="Message" class="${inputClass}" rows="2" maxlength="500"></textarea>`,
-      sms: `<input type="tel" id="val-phone" placeholder="Phone Number" class="${inputClass}" maxlength="15"><textarea id="val-sms-body" placeholder="Message" class="${inputClass}" rows="2" maxlength="160"></textarea>`,
-      wifi: `<input type="text" id="val-ssid" placeholder="Network Name" class="${inputClass}" maxlength="32"><input type="password" id="val-pw" placeholder="Password" class="${inputClass}" maxlength="63"><select id="val-enc" class="${inputClass} cursor-pointer hover:bg-slate-50/50"><option value="WPA">WPA / WPA2</option><option value="WEP">WEP</option><option value="nopass">No Encryption</option></select>`,
-      vcard: `<div class="grid grid-cols-2 gap-3"><input type="text" id="val-fname" placeholder="First Name" class="${inputClass}" maxlength="50"><input type="text" id="val-lname" placeholder="Last Name" class="${inputClass}" maxlength="50"></div><input type="tel" id="val-vc-phone" placeholder="Mobile" class="${inputClass}" maxlength="15"><input type="email" id="val-vc-email" placeholder="Email (Optional)" class="${inputClass}" maxlength="255"><input type="text" id="val-org" placeholder="Company" class="${inputClass}" maxlength="100">`,
-      phone: `<input type="tel" id="val-call" placeholder="Phone Number" class="${inputClass}" maxlength="15">`,
-      whatsapp: `<input type="tel" id="val-wa-phone" placeholder="WhatsApp Number" class="${inputClass}" maxlength="15"><textarea id="val-wa-msg" placeholder="Message (Optional)" class="${inputClass}" rows="2"></textarea>`,
-      upi: `<input type="text" id="val-upi-id" placeholder="UPI ID (e.g. name@bank)" class="${inputClass}"><input type="text" id="val-upi-name" placeholder="Payee Name" class="${inputClass}"><input type="number" id="val-upi-amt" placeholder="Amount (Optional)" class="${inputClass}">`,
-      map: `<input type="text" id="val-map" placeholder="Location Name or Maps Link" class="${inputClass}">`,
-      youtube: `<input type="url" id="val-yt" placeholder="YouTube URL" class="${inputClass}">`,
-      instagram: `<input type="text" id="val-ig" placeholder="Instagram Username" class="${inputClass}">`,
-      facebook: `<input type="url" id="val-fb" placeholder="Facebook URL" class="${inputClass}">`,
-      linkedin: `<input type="url" id="val-li" placeholder="LinkedIn URL" class="${inputClass}">`,
-      telegram: `<input type="text" id="val-tg" placeholder="Telegram Username" class="${inputClass}">`,
-      app: `<input type="url" id="val-app" placeholder="App Store / Play Store Link" class="${inputClass}">`
+      url: `<input type="url" id="val-url" placeholder="Website URL" class="custom-input" maxlength="2048">`,
+      text: `<textarea id="val-text" placeholder="Enter your text..." class="custom-input" rows="3" maxlength="500"></textarea>`,
+      email: `<div class="inputs-wrapper"><input type="email" id="val-email" placeholder="Email Address" class="custom-input" maxlength="255"><input type="text" id="val-sub" placeholder="Subject" class="custom-input" maxlength="100"><textarea id="val-body" placeholder="Message" class="custom-input" rows="2" maxlength="500"></textarea></div>`,
+      sms: `<div class="inputs-wrapper"><input type="tel" id="val-phone" placeholder="Phone Number" class="custom-input" maxlength="15"><textarea id="val-sms-body" placeholder="Message" class="custom-input" rows="2" maxlength="160"></textarea></div>`,
+      wifi: `<div class="inputs-wrapper"><input type="text" id="val-ssid" placeholder="Network Name" class="custom-input" maxlength="32"><input type="password" id="val-pw" placeholder="Password" class="custom-input" maxlength="63"><select id="val-enc" class="custom-input"><option value="WPA">WPA / WPA2</option><option value="WEP">WEP</option><option value="nopass">No Encryption</option></select></div>`,
+      vcard: `<div class="inputs-wrapper"><div class="input-grid-2"><input type="text" id="val-fname" placeholder="First Name" class="custom-input" maxlength="50"><input type="text" id="val-lname" placeholder="Last Name" class="custom-input" maxlength="50"></div><input type="tel" id="val-vc-phone" placeholder="Mobile" class="custom-input" maxlength="15"><input type="email" id="val-vc-email" placeholder="Email (Optional)" class="custom-input" maxlength="255"><input type="text" id="val-org" placeholder="Company" class="custom-input" maxlength="100"></div>`,
+      phone: `<input type="tel" id="val-call" placeholder="Phone Number" class="custom-input" maxlength="15">`,
+      whatsapp: `<div class="inputs-wrapper"><input type="tel" id="val-wa-phone" placeholder="WhatsApp Number" class="custom-input" maxlength="15"><textarea id="val-wa-msg" placeholder="Message (Optional)" class="custom-input" rows="2"></textarea></div>`,
+      upi: `<div class="inputs-wrapper"><input type="text" id="val-upi-id" placeholder="UPI ID (e.g. name@bank)" class="custom-input"><input type="text" id="val-upi-name" placeholder="Payee Name" class="custom-input"><input type="number" id="val-upi-amt" placeholder="Amount (Optional)" class="custom-input"></div>`,
+      map: `<input type="text" id="val-map" placeholder="Location Name or Maps Link" class="custom-input">`,
+      youtube: `<input type="url" id="val-yt" placeholder="YouTube URL" class="custom-input">`,
+      instagram: `<input type="text" id="val-ig" placeholder="Instagram Username" class="custom-input">`,
+      facebook: `<input type="url" id="val-fb" placeholder="Facebook URL" class="custom-input">`,
+      linkedin: `<input type="url" id="val-li" placeholder="LinkedIn URL" class="custom-input">`,
+      telegram: `<input type="text" id="val-tg" placeholder="Telegram Username" class="custom-input">`,
+      app: `<input type="url" id="val-app" placeholder="App Store / Play Store Link" class="custom-input">`
     };
 
     let currentType = 'url';
@@ -389,16 +709,12 @@
     const dlBtn = document.getElementById('main-download-btn');
     const qrWrapper = document.getElementById('qr-preview-wrapper');
     const indicatorDot = document.getElementById('preview-indicator');
-    
-    // Classes for Button State Changes
-    const inactiveClasses = "type-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 p-2.5 rounded-xl text-[10px] sm:text-xs font-medium transition-all flex flex-col items-center justify-center gap-2";
-    const activeClasses = "type-btn active bg-primary text-white shadow-md shadow-primary/20 p-2.5 rounded-xl text-[10px] sm:text-xs font-semibold transition-all flex flex-col items-center justify-center gap-2 border border-transparent";
 
     document.querySelectorAll('.type-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const targetBtn = e.target.closest('.type-btn');
-        document.querySelectorAll('.type-btn').forEach(b => b.className = inactiveClasses);
-        targetBtn.className = activeClasses;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        targetBtn.classList.add('active');
         currentType = targetBtn.dataset.type;
         dynamicInputs.innerHTML = inputTemplates[currentType];
         lucide.createIcons();
@@ -473,14 +789,16 @@
       const validation = validateInputs();
       if(!validation.valid) {
         errorText.textContent = validation.msg; errorMsgBox.classList.remove('hide'); 
-        qrWrapper.classList.add('opacity-30', 'grayscale', 'blur-[2px]'); 
-        dlBtn.classList.add('opacity-50', 'cursor-not-allowed'); 
-        indicatorDot.classList.replace('bg-emerald-400', 'bg-slate-300'); indicatorDot.classList.remove('animate-pulse');
+        qrWrapper.classList.add('disabled'); 
+        dlBtn.classList.add('disabled');
+        dlBtn.disabled = true;
+        indicatorDot.className = 'status-dot inactive';
       } else {
         errorMsgBox.classList.add('hide'); 
-        qrWrapper.classList.remove('opacity-30', 'grayscale', 'blur-[2px]'); 
-        dlBtn.classList.remove('opacity-50', 'cursor-not-allowed'); 
-        indicatorDot.classList.replace('bg-slate-300', 'bg-emerald-400'); indicatorDot.classList.add('animate-pulse');
+        qrWrapper.classList.remove('disabled'); 
+        dlBtn.classList.remove('disabled');
+        dlBtn.disabled = false;
+        indicatorDot.className = 'status-dot active';
         qrOptions.data = getFormattedData(); qrCode.update(qrOptions);
       }
     };
@@ -508,8 +826,8 @@
     const btnPng = document.getElementById('btn-format-png'), btnSvg = document.getElementById('btn-format-svg');
     const updateFormatUI = (format) => {
       selectedFormat = format;
-      if(format === 'png') { btnPng.className = "format-btn active flex-1 py-2.5 rounded-lg bg-white text-primary font-bold shadow-sm border border-slate-200 text-sm flex justify-center items-center gap-1.5"; btnSvg.className = "format-btn flex-1 py-2.5 rounded-lg bg-transparent text-slate-500 font-semibold hover:text-slate-700 text-sm flex justify-center items-center gap-1.5"; }
-      else { btnSvg.className = "format-btn active flex-1 py-2.5 rounded-lg bg-white text-primary font-bold shadow-sm border border-slate-200 text-sm flex justify-center items-center gap-1.5"; btnPng.className = "format-btn flex-1 py-2.5 rounded-lg bg-transparent text-slate-500 font-semibold hover:text-slate-700 text-sm flex justify-center items-center gap-1.5"; }
+      if(format === 'png') { btnPng.className = "format-btn active"; btnSvg.className = "format-btn inactive"; }
+      else { btnSvg.className = "format-btn active"; btnPng.className = "format-btn inactive"; }
     };
     btnPng.addEventListener('click', () => updateFormatUI('png')); btnSvg.addEventListener('click', () => updateFormatUI('svg'));
 
@@ -531,7 +849,7 @@
     
     const showUIMessage = (text, isError = true) => {
       const msgBox = document.getElementById('ui-message'); document.getElementById('ui-message-text').textContent = text;
-      msgBox.className = `w-full mb-5 px-5 py-4 rounded-xl text-sm font-semibold flex items-center gap-3 shadow-sm transform scale-100 border ${isError ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`;
+      msgBox.className = `alert-msg ${isError ? 'error' : 'success'}`;
       clearTimeout(messageTimeout); messageTimeout = setTimeout(() => msgBox.classList.add('hide'), 4000);
     };
 
@@ -554,87 +872,132 @@
           const pnMatch = decodedText.match(/[?&]pn=([^&]+)/); const paMatch = decodedText.match(/[?&]pa=([^&]+)/);
           if(pnMatch) payeeName = decodeURIComponent(pnMatch[1]); if(paMatch) upiId = decodeURIComponent(paMatch[1]);
         }
-        resultHTML = `<div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col items-center text-center gap-2"><p class="text-slate-500 font-semibold text-sm">Paying To:</p><p class="font-black text-lg text-slate-800">${payeeName}</p><p class="text-xs text-slate-500 font-medium break-all">${upiId}</p>${amount ? `<p class="font-bold text-xl text-emerald-600 mt-2">${amount}</p>` : ''}<a href="${decodedText}" class="w-full px-5 py-3.5 bg-[#1ea271] text-white text-sm font-bold rounded-xl hover:bg-[#16855b] transition-colors shadow-sm flex justify-center items-center gap-2 mt-3"><i data-lucide="smartphone-nfc" class="w-4 h-4"></i> Pay with UPI App</a></div>`;
+        resultHTML = `<div class="app-res-box t-upi"><span class="l">Paying To:</span><span class="v">${payeeName}</span><span class="s">${upiId}</span>${amount ? `<span class="a">${amount}</span>` : ''}<a href="${decodedText}" class="app-res-btn b-upi"><i data-lucide="smartphone-nfc"></i> Pay with UPI App</a></div>`;
       }
       else if (decodedText.match(/wa\.me/i) || decodedText.match(/^whatsapp:/i)) {
         resultType = 'WhatsApp Action'; icon = 'message-circle';
-        resultHTML = `<div class="p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl flex flex-col items-center text-center gap-3"><i data-lucide="message-circle" class="w-8 h-8 text-[#25D366]"></i><span class="text-sm font-bold text-slate-700 break-all">${decodedText}</span><a href="${decodedText}" target="_blank" class="w-full px-5 py-3 bg-[#25D366] text-white text-sm font-bold rounded-xl hover:bg-[#128C7E] transition-colors shadow-sm flex justify-center items-center gap-2 mt-1"><i data-lucide="external-link" class="w-4 h-4"></i> Chat on WhatsApp</a></div>`;
+        resultHTML = buildAppUI(decodedText, 't-wa', 'b-wa', 'message-circle', 'Chat on WhatsApp');
       }
       else if (decodedText.match(/^geo:/i) || decodedText.match(/maps\.google\.com/i) || decodedText.match(/goo\.gl\/maps/i)) {
         resultType = 'Location & Map'; icon = 'map-pin';
-        resultHTML = `<div class="p-4 bg-blue-50 border border-blue-100 rounded-xl flex flex-col items-center text-center gap-3"><i data-lucide="map-pin" class="w-8 h-8 text-blue-500"></i><span class="text-sm font-semibold text-slate-700 break-all">${decodedText}</span><a href="${decodedText}" target="_blank" class="w-full px-5 py-3 bg-blue-500 text-white text-sm font-bold rounded-xl hover:bg-blue-600 transition-colors shadow-sm flex justify-center items-center gap-2 mt-1"><i data-lucide="navigation" class="w-4 h-4"></i> Open in Maps</a></div>`;
+        resultHTML = buildAppUI(decodedText, 't-map', 'b-map', 'map-pin', 'Open in Maps');
       }
       else if (decodedText.match(/youtube\.com/i) || decodedText.match(/youtu\.be/i)) {
-        resultType = 'YouTube Link'; icon = 'youtube'; resultHTML = buildAppUI(decodedText, 'bg-red-50', 'border-red-100', 'text-red-600', 'bg-red-600', 'hover:bg-red-700', 'youtube', 'Open YouTube');
+        resultType = 'YouTube Link'; icon = 'youtube'; resultHTML = buildAppUI(decodedText, 't-yt', 'b-yt', 'youtube', 'Open YouTube');
       } else if (decodedText.match(/instagram\.com/i)) {
-        resultType = 'Instagram Profile'; icon = 'instagram'; resultHTML = buildAppUI(decodedText, 'bg-pink-50', 'border-pink-100', 'text-pink-600', 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600', 'hover:opacity-90', 'instagram', 'Open Instagram');
+        resultType = 'Instagram Profile'; icon = 'instagram'; resultHTML = buildAppUI(decodedText, 't-ig', 'b-ig', 'instagram', 'Open Instagram');
       } else if (decodedText.match(/facebook\.com/i) || decodedText.match(/fb\.me/i)) {
-        resultType = 'Facebook Link'; icon = 'facebook'; resultHTML = buildAppUI(decodedText, 'bg-blue-50', 'border-blue-100', 'text-blue-600', 'bg-[#1877F2]', 'hover:bg-[#166fe5]', 'facebook', 'Open Facebook');
+        resultType = 'Facebook Link'; icon = 'facebook'; resultHTML = buildAppUI(decodedText, 't-fb', 'b-fb', 'facebook', 'Open Facebook');
       } else if (decodedText.match(/linkedin\.com/i)) {
-        resultType = 'LinkedIn Profile'; icon = 'linkedin'; resultHTML = buildAppUI(decodedText, 'bg-blue-50', 'border-blue-100', 'text-blue-700', 'bg-[#0A66C2]', 'hover:bg-[#084e96]', 'linkedin', 'Open LinkedIn');
+        resultType = 'LinkedIn Profile'; icon = 'linkedin'; resultHTML = buildAppUI(decodedText, 't-li', 'b-li', 'linkedin', 'Open LinkedIn');
       } else if (decodedText.match(/t\.me/i) || decodedText.match(/telegram\.me/i)) {
-        resultType = 'Telegram Link'; icon = 'send'; resultHTML = buildAppUI(decodedText, 'bg-cyan-50', 'border-cyan-100', 'text-cyan-600', 'bg-[#229ED9]', 'hover:bg-[#1c88b9]', 'send', 'Open Telegram');
+        resultType = 'Telegram Link'; icon = 'send'; resultHTML = buildAppUI(decodedText, 't-tg', 'b-tg', 'send', 'Open Telegram');
       } else if (decodedText.match(/play\.google\.com/i) || decodedText.match(/apps\.apple\.com/i)) {
-        resultType = 'App Store Link'; icon = 'layout-grid'; resultHTML = buildAppUI(decodedText, 'bg-slate-100', 'border-slate-200', 'text-slate-800', 'bg-slate-800', 'hover:bg-slate-900', 'download', 'Download App');
+        resultType = 'App Store Link'; icon = 'layout-grid'; resultHTML = buildAppUI(decodedText, 't-app', 'b-app', 'download', 'Download App');
       }
       else if (decodedText.startsWith('WIFI:')) {
         resultType = 'WiFi Network'; icon = 'wifi';
         let ssid = decodedText.match(/S:(.*?);/)?.[1] || 'Unknown'; let pwd = decodedText.match(/P:(.*?);/)?.[1] || '';
-        resultHTML = `<div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100"><span class="font-bold text-slate-500 uppercase text-xs">Network Name</span> <span class="font-bold text-slate-900">${ssid}</span></div><div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100 mt-2"><span class="font-bold text-slate-500 uppercase text-xs">Password</span> <span class="font-bold text-slate-900">${pwd ? pwd : 'No Password'}</span></div>${pwd ? `<button onclick="copyWifiPassword('${pwd.replace(/'/g, "\\'")}')" class="w-full mt-3 px-4 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-sm flex justify-center items-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Copy Password</button>` : ''}`;
+        resultHTML = `<div class="wifi-item"><span class="l">Network Name</span><span class="v">${ssid}</span></div><div class="wifi-item"><span class="l">Password</span><span class="v">${pwd ? pwd : 'No Password'}</span></div>${pwd ? `<button onclick="copyWifiPassword('${pwd.replace(/'/g, "\\'")}')" class="btn-general bg-dark"><i data-lucide="copy"></i> Copy Password</button>` : ''}`;
       } 
       else if (decodedText.startsWith('BEGIN:VCARD')) {
         resultType = 'Contact Details'; icon = 'contact';
         let name = decodedText.match(/FN:(.*?)\n/)?.[1] || 'Unknown'; let phone = decodedText.match(/TEL.*?:(.*?)\n/)?.[1] || '';
-        resultHTML = `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-2"><p class="font-black text-lg text-slate-900">${name}</p>${phone ? `<p class="font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i> ${phone}</p>` : ''}</div>${phone ? `<a href="tel:${phone.replace(/\s+/g,'')}" class="mt-3 w-full px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-indigo-700 flex justify-center items-center gap-2 shadow-sm"><i data-lucide="phone-call" class="w-4 h-4"></i> Call Now</a>` : ''}`;
+        resultHTML = `<div class="vcard-wrap"><span class="n">${name}</span>${phone ? `<span class="p"><i data-lucide="phone"></i> ${phone}</span>` : ''}</div>${phone ? `<a href="tel:${phone.replace(/\s+/g,'')}" class="btn-general bg-indigo"><i data-lucide="phone-call"></i> Call Now</a>` : ''}`;
       } 
       else if (/^https?:\/\//i.test(decodedText)) {
         resultType = 'Website URL'; icon = 'link';
-        resultHTML = `<div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col items-center text-center gap-3"><span class="text-sm font-semibold text-slate-700 break-all">${decodedText}</span><a href="${decodedText}" target="_blank" class="w-full px-5 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm flex justify-center items-center gap-2 mt-1"><i data-lucide="external-link" class="w-4 h-4"></i> Open Website</a></div>`;
+        resultHTML = `<div class="app-res-box t-upi" style="border: 1px solid #e2e8f0; background-color: #eef2ff;"><span>${decodedText}</span><a href="${decodedText}" target="_blank" class="btn-general bg-indigo" style="margin-top: 0.25rem;"><i data-lucide="external-link"></i> Open Website</a></div>`;
       } 
       else if (decodedText.toLowerCase().startsWith('smsto:') || decodedText.toLowerCase().startsWith('tel:')) {
         resultType = 'Phone Action'; icon = 'phone';
-        resultHTML = `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 font-bold text-slate-700 break-all text-center">${decodedText.replace(/^(smsto:|tel:)/i, '')}</div><a href="${decodedText}" class="w-full mt-3 px-4 py-3 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-colors flex justify-center items-center gap-2 shadow-sm"><i data-lucide="smartphone" class="w-4 h-4"></i> Take Action</a>`;
+        resultHTML = `<div class="plain-text">${decodedText.replace(/^(smsto:|tel:)/i, '')}</div><a href="${decodedText}" class="btn-general bg-green"><i data-lucide="smartphone"></i> Take Action</a>`;
       }
       else {
-        resultHTML = `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 font-medium text-slate-700 break-all whitespace-pre-wrap">${decodedText}</div>`;
+        resultHTML = `<div class="plain-text">${decodedText}</div>`;
       }
 
-      scanTypeLabel.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> ${resultType}`;
+      scanTypeLabel.innerHTML = `<i data-lucide="${icon}"></i> ${resultType}`;
       richContentBox.innerHTML = resultHTML;
       lucide.createIcons();
       setTimeout(() => { resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
     };
 
-    const buildAppUI = (url, bgLight, borderLight, textDark, btnColor, btnHover, lucideIcon, btnText) => {
-      return `<div class="p-4 ${bgLight} border ${borderLight} rounded-xl flex flex-col items-center text-center gap-3"><i data-lucide="${lucideIcon}" class="w-8 h-8 ${textDark}"></i><span class="text-sm font-bold text-slate-700 break-all">${url}</span><a href="${url}" target="_blank" class="w-full px-5 py-3 ${btnColor} text-white text-sm font-bold rounded-xl ${btnHover} transition-all shadow-sm flex justify-center items-center gap-2 mt-1"><i data-lucide="external-link" class="w-4 h-4"></i> ${btnText}</a></div>`;
+    const buildAppUI = (url, themeClass, btnClass, lucideIcon, btnText) => {
+      return `<div class="app-res-box ${themeClass}"><i data-lucide="${lucideIcon}"></i><span>${url}</span><a href="${url}" target="_blank" class="app-res-btn ${btnClass}"><i data-lucide="external-link"></i> ${btnText}</a></div>`;
     };
 
-    const startScanner = () => {
-      if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-      resultContainer.classList.add('hide'); camPlaceholder.style.display = 'none';
-      startCamBtn.classList.add('hide'); stopCamBtn.classList.remove('hide');
-      const config = { fps: 30, qrbox: { width: 280, height: 280 }, aspectRatio: 1.0, rememberLastUsedCamera: true };
-      html5QrCode.start( { facingMode: "environment" }, config, 
-        (decodedText) => { handleScanSuccess(decodedText); },
-        (errorMessage) => { }
-      ).catch(err => { showUIMessage("Camera permission denied.", true); stopScanner(); });
-    };
-    
-    const stopScanner = () => {
-      if (html5QrCode && html5QrCode.isScanning) {
-        html5QrCode.stop().then(() => { startCamBtn.classList.remove('hide'); stopCamBtn.classList.add('hide'); camPlaceholder.style.display = 'flex'; }).catch(console.error);
-      } else {
-        startCamBtn.classList.remove('hide'); stopCamBtn.classList.add('hide'); camPlaceholder.style.display = 'flex';
+    const startScanner = async () => {
+  if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+
+  resultContainer.classList.add('hide');
+  camPlaceholder.style.display = 'none';
+  startCamBtn.classList.add('hide');
+  stopCamBtn.classList.remove('hide');
+
+  // Device check
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // Mobile = max camera resolution
+  // Laptop/Desktop = 720p support
+  const cameraConfig = isMobile
+    ? {
+        facingMode: "environment",
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
       }
-    };
+    : {
+        facingMode: "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      };
+
+  const config = {
+    fps: 30,
+    qrbox: { width: 280, height: 280 },
+    aspectRatio: 1.0,
+    rememberLastUsedCamera: true
+  };
+
+  try {
+    await html5QrCode.start(
+      cameraConfig,
+      config,
+      (decodedText) => {
+        handleScanSuccess(decodedText);
+      },
+      (errorMessage) => {}
+    );
+  } catch (err) {
+    showUIMessage("Camera permission denied.", true);
+    stopScanner();
+  }
+};
+
+const stopScanner = () => {
+  if (html5QrCode && html5QrCode.isScanning) {
+    html5QrCode.stop()
+      .then(() => {
+        startCamBtn.classList.remove('hide');
+        stopCamBtn.classList.add('hide');
+        camPlaceholder.style.display = 'flex';
+      })
+      .catch(console.error);
+  } else {
+    startCamBtn.classList.remove('hide');
+    stopCamBtn.classList.add('hide');
+    camPlaceholder.style.display = 'flex';
+  }
+};
 
     startCamBtn.addEventListener('click', startScanner); stopCamBtn.addEventListener('click', stopScanner);
 
     document.getElementById('copy-result-btn').addEventListener('click', () => {
       navigator.clipboard.writeText(rawDataInput.value).then(() => {
-        const icon = document.querySelector('#copy-result-btn i');
-        icon.setAttribute('data-lucide', 'check'); icon.classList.add('text-primary'); lucide.createIcons();
-        setTimeout(() => { icon.setAttribute('data-lucide', 'copy'); icon.classList.remove('text-primary'); lucide.createIcons(); }, 2000);
+        const iconBtn = document.getElementById('copy-result-btn');
+        const icon = iconBtn.querySelector('i');
+        icon.setAttribute('data-lucide', 'check'); iconBtn.classList.add('success'); lucide.createIcons();
+        setTimeout(() => { icon.setAttribute('data-lucide', 'copy'); iconBtn.classList.remove('success'); lucide.createIcons(); }, 2000);
       });
     });
   </script>

@@ -927,68 +927,24 @@
       return `<div class="app-res-box ${themeClass}"><i data-lucide="${lucideIcon}"></i><span>${url}</span><a href="${url}" target="_blank" class="app-res-btn ${btnClass}"><i data-lucide="external-link"></i> ${btnText}</a></div>`;
     };
 
-    const startScanner = async () => {
-  if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-
-  resultContainer.classList.add('hide');
-  camPlaceholder.style.display = 'none';
-  startCamBtn.classList.add('hide');
-  stopCamBtn.classList.remove('hide');
-
-  // Device check
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  // Mobile = max camera resolution
-  // Laptop/Desktop = 720p support
-  const cameraConfig = isMobile
-    ? {
-        facingMode: "environment",
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
+    const startScanner = () => {
+      if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+      resultContainer.classList.add('hide'); camPlaceholder.style.display = 'none';
+      startCamBtn.classList.add('hide'); stopCamBtn.classList.remove('hide');
+      const config = { fps: 30, qrbox: { width: 280, height: 280 }, aspectRatio: 1.0, rememberLastUsedCamera: true };
+      html5QrCode.start( { facingMode: "environment" }, config, 
+        (decodedText) => { handleScanSuccess(decodedText); },
+        (errorMessage) => { }
+      ).catch(err => { showUIMessage("Camera permission denied.", true); stopScanner(); });
+    };
+    
+    const stopScanner = () => {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => { startCamBtn.classList.remove('hide'); stopCamBtn.classList.add('hide'); camPlaceholder.style.display = 'flex'; }).catch(console.error);
+      } else {
+        startCamBtn.classList.remove('hide'); stopCamBtn.classList.add('hide'); camPlaceholder.style.display = 'flex';
       }
-    : {
-        facingMode: "environment",
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      };
-
-  const config = {
-    fps: 30,
-    qrbox: { width: 280, height: 280 },
-    aspectRatio: 1.0,
-    rememberLastUsedCamera: true
-  };
-
-  try {
-    await html5QrCode.start(
-      cameraConfig,
-      config,
-      (decodedText) => {
-        handleScanSuccess(decodedText);
-      },
-      (errorMessage) => {}
-    );
-  } catch (err) {
-    showUIMessage("Camera permission denied.", true);
-    stopScanner();
-  }
-};
-
-const stopScanner = () => {
-  if (html5QrCode && html5QrCode.isScanning) {
-    html5QrCode.stop()
-      .then(() => {
-        startCamBtn.classList.remove('hide');
-        stopCamBtn.classList.add('hide');
-        camPlaceholder.style.display = 'flex';
-      })
-      .catch(console.error);
-  } else {
-    startCamBtn.classList.remove('hide');
-    stopCamBtn.classList.add('hide');
-    camPlaceholder.style.display = 'flex';
-  }
-};
+    };
 
     startCamBtn.addEventListener('click', startScanner); stopCamBtn.addEventListener('click', stopScanner);
 

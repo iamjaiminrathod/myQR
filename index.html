@@ -218,11 +218,11 @@
         .export-wrapper { padding: 15px; background: transparent; width: 100%; display: flex; justify-content: center;}
 
         .sticker-card {
-            background: #ffffff; width: 100%; max-width: 320px; border-radius: 18px; 
+            background: #ffffff; width: 100%; max-width: 330px; border-radius: 18px; 
             border: 8px solid #000000; box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; position: relative;
         }
         .sticker-top { padding: 20px 20px 15px 20px; border-radius: 10px 10px 0 0; background: #fff;} 
-        .brand-header { font-size: 30px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 2px; }
+        .brand-header { font-size: 32px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 2px; }
         .brand-header span { color: #f59e0b; }
         .tagline { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
 
@@ -589,39 +589,43 @@
     </script>
 
     <script type="module">
-        // Firebase tools import kar rahe hain
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-        // TERA FIREBASE CONFIG (Yahan tujhe apni asli keys dalni hongi)
-    const firebaseConfig = {
-    apiKey: "AIzaSyBkgf3O5EW1rz4JPNe5uq6mY-insC3cCJ0",
-    authDomain: "samparkpro-6150e.firebaseapp.com",
-    projectId: "samparkpro-6150e",
-    storageBucket: "samparkpro-6150e.firebasestorage.app",
-    messagingSenderId: "633734419729",
-    appId: "1:633734419729:web:d1a83103fe84558d24e8b0",
-    measurementId: "G-2CPCWT2101"
-  };
-        // Firebase Start karo
+        // TERA FIREBASE CONFIG (With Provided Keys)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkgf3O5EW1rz4JPNe5uq6mY-insC3cCJ0",
+            authDomain: "samparkpro-6150e.firebaseapp.com",
+            projectId: "samparkpro-6150e",
+            storageBucket: "samparkpro-6150e.firebasestorage.app",
+            messagingSenderId: "633734419729",
+            appId: "1:633734419729:web:d1a83103fe84558d24e8b0",
+            measurementId: "G-2CPCWT2101"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // 1. Google Login Function (Attached to window so HTML buttons can click it)
+        // 1. Google Login Function (Attached to window, gracefully handles popup closes)
         window.loginWithGoogle = function() {
+            console.log("Login sequence initiated...");
             signInWithPopup(auth, googleProvider)
                 .then((result) => {
                     const user = result.user;
                     console.log("Login Success:", user.email);
                     
-                    // Modal band karo aur welcome message dikhao
                     toggleAuthModal();
                     alert("Welcome " + user.displayName + "! Login successful.");
                     
                 }).catch((error) => {
-                    console.error("Login Failed:", error);
-                    alert("Login mein error aayi: " + error.message);
+                    // Suppress error if user simply closed the popup
+                    if(error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+                        console.log("Login cancelled by user.");
+                    } else {
+                        console.error("Login Failed:", error);
+                        alert("Login mein error aayi: " + error.message);
+                    }
                 });
         }
 
@@ -632,7 +636,7 @@
                 alert("Bhai, pehle email toh daal!");
                 return;
             }
-            alert("Email link login Firebase console se on karna baaki hai!");
+            alert("Email link login Firebase console se setup karna baaki hai!");
         }
     </script>
 

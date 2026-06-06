@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sampark Pro - Premium Print Tag</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
@@ -13,283 +13,144 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #f8fafc; color: #0f172a; font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; }
         
-        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: #f8fafc; color: #0f172a; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        h1, h2, h3, input, button, select { font-family: 'Poppins', sans-serif; }
 
-        /* --- PREMIUM HEADER & SIDE MENU --- */
-        header { 
-            background: #ffffff; padding: 15px 5%; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            position: sticky; top: 0; z-index: 100;
-        }
+        /* HEADER */
+        header { background: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 1100; }
         .logo { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; display: flex; align-items: center; gap: 5px; }
         .logo span { color: #f59e0b; }
 
-        /* Desktop Nav */
-        .desktop-nav { display: flex; gap: 25px; align-items: center; }
-        .desktop-nav a.nav-link { 
-            text-decoration: none; color: #475569; font-weight: 600; font-size: 14px; 
-            position: relative; transition: 0.3s; padding: 5px 0;
-        }
+        .desktop-nav { display: flex; gap: 30px; align-items: center; }
+        .desktop-nav a.nav-link { text-decoration: none; color: #475569; font-weight: 600; font-size: 14px; position: relative; transition: 0.3s; padding: 5px 0; cursor: pointer; }
         .desktop-nav a.nav-link:hover { color: #0f172a; }
-        .desktop-nav a.nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px; 
-            bottom: 0; left: 0; background-color: #f59e0b; transition: width 0.3s ease;
-        }
+        .desktop-nav a.nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background-color: #f59e0b; transition: width 0.3s ease; }
         .desktop-nav a.nav-link:hover::after { width: 100%; }
-
-        /* Login Button */
-        .nav-login-btn {
-            background: #f1f5f9; color: #0f172a !important; padding: 10px 20px;
-            border-radius: 50px; font-weight: 700; font-size: 14px; text-decoration: none;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #e2e8f0;
-            cursor: pointer;
-        }
-        .nav-login-btn:hover { background: #e2e8f0; }
-
-        .nav-create-btn { 
-            background: #0f172a; color: #ffffff !important; padding: 10px 20px; 
-            border-radius: 50px; font-weight: 700; font-size: 14px; text-decoration: none;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); cursor: pointer;
-        }
+        
+        .nav-create-btn { background: #0f172a; color: #ffffff !important; padding: 10px 22px; border-radius: 50px; font-weight: 700; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
         .nav-create-btn:hover { background: #f59e0b; color: #0f172a !important; transform: translateY(-2px); }
         .nav-create-btn i { color: #f59e0b; }
         .nav-create-btn:hover i { color: #0f172a; }
 
-        /* Mobile Hamburger */
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: #0f172a; transition: 0.3s; }
-        .menu-toggle:hover { color: #f59e0b; }
-
-        /* Side Drawer Menu */
-        .side-menu {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
-            background: #ffffff; box-shadow: 10px 0 25px rgba(0,0,0,0.1);
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding: 25px;
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        /* MOBILE MENU */
+        .menu-toggle { display: none; font-size: 28px; cursor: pointer; color: #0f172a; transition: 0.3s; padding: 5px; z-index: 1200; }
+        .side-menu { position: fixed; top: 0; left: -320px; width: 280px; height: 100vh; background: #ffffff; box-shadow: 10px 0 25px rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
         .side-menu.active { left: 0; }
-        
         .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 10px; }
-        .side-menu-header .logo { font-size: 22px; }
-        .close-btn { font-size: 24px; cursor: pointer; color: #64748b; transition: 0.3s; }
-        .close-btn:hover { color: #ef4444; transform: rotate(90deg); }
-        
-        .side-menu a.nav-link { 
-            text-decoration: none; color: #1e293b; font-weight: 700; font-size: 16px; 
-            padding: 12px 15px; border-radius: 10px; transition: 0.3s;
-            display: flex; align-items: center; gap: 12px; background: #f8fafc;
-        }
+        .close-btn { font-size: 26px; cursor: pointer; color: #64748b; transition: 0.3s; }
+        .close-btn:hover { color: #ef4444; }
+        .side-menu a.nav-link { text-decoration: none; color: #1e293b; font-weight: 600; font-size: 15px; padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; gap: 12px; background: #f8fafc; }
         .side-menu a.nav-link i { color: #f59e0b; font-size: 18px; width: 20px; text-align: center; }
-        .side-menu a.nav-link:hover { background: #f1f5f9; transform: translateX(5px); }
-        
-        .side-menu .nav-login-btn { justify-content: center; padding: 15px; font-size: 16px; margin-top: 15px; border-radius: 12px; }
-        .side-menu .nav-create-btn { justify-content: center; padding: 15px; font-size: 16px; margin-top: 5px; border-radius: 12px; }
-        
-        .menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px);
-            z-index: 999; display: none; opacity: 0; transition: 0.3s;
-        }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); z-index: 1999; display: none; opacity: 0; transition: 0.3s; }
         .menu-overlay.active { display: block; opacity: 1; }
 
-        /* --- LOGIN MODAL CSS --- */
-        .auth-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px);
-            z-index: 2000; display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: 0.3s;
-        }
-        .auth-modal-overlay.active { display: flex; opacity: 1; }
-        
-        .auth-modal {
-            background: #ffffff; width: 100%; max-width: 400px; border-radius: 24px;
-            padding: 40px 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            position: relative; transform: translateY(20px); transition: 0.3s; text-align: center;
-        }
-        .auth-modal-overlay.active .auth-modal { transform: translateY(0); }
-        
-        .auth-close { position: absolute; top: 20px; right: 20px; font-size: 20px; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .auth-close:hover { color: #ef4444; }
-        
-        .auth-modal h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-        .auth-modal p { font-size: 14px; color: #64748b; margin-bottom: 30px; }
+        /* LAYOUT */
+        .container { flex: 1; width: 100%; max-width: 1150px; margin: 40px auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
 
-        .btn-google {
-            width: 100%; background: #ffffff; border: 2px solid #e2e8f0; padding: 14px; border-radius: 12px;
-            font-size: 15px; font-weight: 700; color: #0f172a; display: flex; justify-content: center; align-items: center; gap: 10px;
-            cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif;
-        }
-        .btn-google:hover { background: #f8fafc; border-color: #cbd5e1; }
-        .btn-google img { width: 20px; }
-
-        .auth-divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
-        .auth-divider:not(:empty)::before { margin-right: .5em; }
-        .auth-divider:not(:empty)::after { margin-left: .5em; }
-
-        .auth-input {
-            width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid #e2e8f0;
-            background: #f8fafc; font-size: 14px; font-weight: 500; outline: none; transition: 0.3s;
-            margin-bottom: 15px; font-family: 'Inter', sans-serif; text-align: center;
-        }
-        .auth-input:focus { border-color: #f59e0b; background: #ffffff; }
-
-        .btn-email-login {
-            width: 100%; background: #0f172a; color: #ffffff; padding: 14px; border-radius: 12px;
-            font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; border: none; font-family: 'Inter', sans-serif;
-        }
-        .btn-email-login:hover { background: #1e293b; }
-
-        /* Main Workspace */
-        .container { 
-            width: 100%; max-width: 1150px; margin: 40px auto; padding: 0 20px; 
-            display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: start; 
-        }
-
-        /* --- LEFT: PREMIUM FORM SECTION --- */
-        .form-section { background: #ffffff; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; width: 100%; }
+        /* FORM SECTION */
+        .form-section { background: #ffffff; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; flex: 1; min-width: 0; }
         .form-section h1 { font-size: 28px; font-weight: 800; margin-bottom: 5px; color: #0f172a; }
-        .form-section p { color: #64748b; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .form-section p { color: #64748b; font-size: 14px; margin-bottom: 25px; line-height: 1.5; font-weight: 500; }
         
         .section-title { font-size: 13px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; margin-top: 20px; }
-
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .input-group { margin-bottom: 18px; position: relative; }
-        .input-group label { display: block; font-size: 12px; color: #475569; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        
+        .input-group label { display: block; font-size: 12px; color: #475569; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
         .input-wrapper { position: relative; }
-        .input-wrapper i.field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 15px; transition: 0.3s; pointer-events: none; z-index: 2; }
-        
-        .input-group input { 
-            width: 100%; padding: 14px 14px 14px 40px; border-radius: 12px; 
-            border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; font-weight: 600; 
-            outline: none; transition: all 0.3s ease; color: #0f172a; font-family: 'Inter', sans-serif;
-        }
-        .input-group input::placeholder { color: #cbd5e1; font-weight: 500; }
-        .input-group input:focus { border-color: #f59e0b; background: #ffffff; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1); }
-        .input-group input:focus + i.field-icon, .input-wrapper:focus-within i.field-icon { color: #f59e0b; }
+        .input-wrapper i.field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 15px; z-index: 2; pointer-events: none; }
+        .input-group input { width: 100%; padding: 14px 14px 14px 42px; border-radius: 12px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; font-weight: 600; outline: none; transition: 0.3s; color: #0f172a; }
+        .input-group input:focus { border-color: #f59e0b; background: #ffffff; }
         .input-group input.error-border { border-color: #ef4444; background: #fef2f2; }
         .error-msg { color: #ef4444; font-size: 11px; font-weight: 600; margin-top: 5px; display: none; }
 
-        .add-btn { font-size: 12px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: inline-block; margin-bottom: 20px; transition: 0.2s; }
+        .add-btn { font-size: 12px; font-weight: 700; color: #f59e0b; text-transform: uppercase; cursor: pointer; display: inline-block; margin-bottom: 20px; transition: 0.2s; }
         .add-btn:hover { color: #d97706; text-decoration: underline; }
-
         .hidden-section { display: none; padding-top: 10px; border-top: 1px dashed #e2e8f0; margin-top: -5px; margin-bottom: 15px; }
 
-        /* --- CUSTOM DROPDOWN CSS --- */
+        /* CUSTOM DROPDOWN */
         .custom-dropdown-container { position: relative; width: 100%; }
-        .custom-dropdown-selected {
-            width: 100%; padding: 14px 14px 14px 40px; border-radius: 12px; 
-            border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; font-weight: 600; 
-            color: #cbd5e1; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            transition: all 0.3s ease; user-select: none;
-        }
+        .custom-dropdown-selected { width: 100%; padding: 14px 14px 14px 42px; border-radius: 12px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; font-weight: 600; color: #cbd5e1; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .custom-dropdown-selected.has-value { color: #0f172a; }
-        .custom-dropdown-selected.active { border-color: #f59e0b; background: #ffffff; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1); }
-        
-        .custom-dropdown-menu {
-            position: absolute; top: 105%; left: 0; width: 100%; background: #ffffff;
-            border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s ease;
-            z-index: 10; overflow: hidden; max-height: 200px; overflow-y: auto;
-        }
+        .custom-dropdown-menu { position: absolute; top: 105%; left: 0; width: 100%; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.2s; z-index: 10; max-height: 200px; overflow-y: auto; }
         .custom-dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .custom-dropdown-menu div {
-            padding: 10px 16px; font-size: 13px; font-weight: 600; color: #475569;
-            cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f1f5f9;
-        }
-        .custom-dropdown-menu div:last-child { border-bottom: none; }
-        .custom-dropdown-menu div:hover { background: #f8fafc; color: #f59e0b; padding-left: 20px; }
+        .custom-dropdown-menu div { padding: 10px 16px; font-size: 13px; font-weight: 600; color: #475569; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .custom-dropdown-menu div:hover { background: #f8fafc; color: #f59e0b; }
 
-        .btn-generate { 
-            width: 100%; background: #0f172a; color: #ffffff; padding: 16px; 
-            border: none; border-radius: 12px; font-size: 15px; font-weight: 800; 
-            cursor: pointer; transition: 0.3s; margin-top: 10px; font-family: 'Outfit', sans-serif; 
-            text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px;
-        }
-        .btn-generate:hover { background: #1e293b; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        /* GENERATE BUTTON */
+        .btn-generate { width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: #ffffff; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); letter-spacing: 0.5px; }
+        .btn-generate i { font-size: 18px; color: #ffffff; }
+        .btn-generate:hover { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(234, 88, 12, 0.4); }
+        
+        .ui-message { display: none; padding: 15px; border-radius: 12px; margin-top: 15px; font-size: 14px; font-weight: 600; text-align: center; }
+        .ui-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .ui-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* --- RIGHT: STICKER PREVIEW SECTION (FIXED STICKY) --- */
-        .preview-section { display: flex; flex-direction: column; align-items: center; position: sticky; top: 100px; align-self: start; height: max-content; }
-        .preview-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1.5px; background: #e2e8f0; padding: 6px 15px; border-radius: 20px; }
-        .export-wrapper { padding: 15px; background: transparent; width: 100%; display: flex; justify-content: center;}
+        .progress-container { display: none; margin-top: 15px; text-align: center; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .progress-text { font-size: 13px; font-weight: 700; color: #ea580c; margin-bottom: 8px; }
+        .progress-bar-bg { width: 100%; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: #ea580c; transition: width 0.4s ease; }
 
-        .sticker-card {
-            background: #ffffff; width: 100%; max-width: 330px; border-radius: 18px; 
-            border: 8px solid #000000; box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; position: relative;
-        }
-        .sticker-top { padding: 20px 20px 15px 20px; border-radius: 10px 10px 0 0; background: #fff;} 
-        .brand-header { font-size: 32px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 2px; }
+        /* PREVIEW SECTION */
+        .preview-section { position: -webkit-sticky; position: sticky; top: 100px; width: 340px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; z-index: 50; }
+        .preview-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; background: #e2e8f0; padding: 6px 15px; border-radius: 20px; }
+        .export-wrapper { padding: 15px; background: transparent; width: 100%; display: flex; justify-content: center; }
+
+        .sticker-card { background: #0f172a; width: 340px; height: 520px; flex-shrink: 0; border-radius: 30px; border: 10px solid #000000; box-shadow: 0 20px 40px rgba(0,0,0,0.15); text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; transform-origin: top center; }
+        .sticker-top { background: #ffffff; padding: 25px 20px 10px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;} 
+        .brand-header { font-size: 34px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 4px; }
         .brand-header span { color: #f59e0b; }
-        .tagline { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .tagline { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 12px; }
 
-        .qr-wrapper { display: inline-block; padding: 12px; background: #fff; border: 3px solid #e2e8f0; border-radius: 16px; margin-bottom: 15px; }
-        #qrcode img, #qrcode canvas { border-radius: 8px; overflow: hidden; }
+        .qr-wrapper { width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; padding: 10px; background: #fff; border: 3px solid #e2e8f0; border-radius: 18px; margin-bottom: 15px; }
+        #qrcode img, #qrcode canvas { border-radius: 8px; overflow: hidden; display: block; width: 100% !important; height: 100% !important;}
 
-        .plate-container { display: flex; border: 3px solid #000; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 5px; }
-        .ind-strip { background: #1e3a8a; width: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .ind-text { color: white; font-size: 8px; font-weight: 800; margin-bottom: 2px; }
-        .ind-flag { width: 12px; height: 8px; background: linear-gradient(to bottom, #ff9933 33%, #ffffff 33%, #ffffff 66%, #138808 66%); }
-        .plate-number { flex: 1; font-size: 26px; font-weight: 800; color: #000; padding: 6px 0; letter-spacing: 2px; font-family: 'Outfit', sans-serif; }
+        .plate-container { display: flex; border: 3px solid #000; border-radius: 10px; overflow: hidden; background: #fff; margin-bottom: 0px; width: 100%; height: 50px; }
+        .ind-strip { background: #1e3a8a; width: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0;}
+        .ind-text { color: white; font-size: 9px; font-weight: 800; margin-bottom: 2px; }
+        .ind-flag { width: 14px; height: 9px; background: linear-gradient(to bottom, #ff9933 33%, #ffffff 33%, #ffffff 66%, #138808 66%); }
+        .plate-number { flex: 1; font-size: 24px; font-weight: 800; color: #000; padding: 0; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; }
 
-        .print-footer {
-            background: #0f172a; padding: 15px; border-top: 4px solid #f59e0b;
-            display: flex; flex-direction: column; align-items: center; border-radius: 0 0 10px 10px; 
-        }
-        .footer-icons-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 8px; font-size: 18px; color: #f59e0b; }
-        .footer-alert-text { font-size: 10px; font-weight: 700; color: #cbd5e1; line-height: 1.4; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
+        .print-footer { background: #0f172a; padding: 18px 15px; border-top: 6px solid #f59e0b; display: flex; flex-direction: column; align-items: center; width: 100%; min-height: 95px; margin-top: -1px; }
+        .footer-icons-row { display: flex; justify-content: center; gap: 22px; margin-bottom: 10px; font-size: 20px; color: #f59e0b; }
+        .footer-alert-text { font-size: 10px; font-weight: 700; color: #cbd5e1; line-height: 1.4; text-transform: uppercase; }
 
-        /* Mobile Responsiveness */
+        /* FOOTER */
+        .main-footer { background: #ffffff; border-top: 1px solid #e2e8f0; padding: 25px 20px; text-align: center; margin-top: auto; width: 100%; }
+        .main-footer p { font-size: 14px; color: #64748b; font-weight: 500; }
+        .main-footer p span { color: #0f172a; font-weight: 800; }
+        .social-icons { margin-top: 12px; display: flex; justify-content: center; gap: 15px; }
+        .social-icons a { font-size: 22px; transition: 0.3s; color: #475569;}
+        .social-icons a.insta:hover { color: #e1306c; transform: translateY(-3px); }
+        .social-icons a.wa:hover { color: #25d366; transform: translateY(-3px); }
+
+        /* MOBILE RESPONSIVE */
         @media (max-width: 900px) {
             .desktop-nav { display: none; }
             .menu-toggle { display: block; }
-            .container { grid-template-columns: 1fr; gap: 25px; padding: 15px; margin: 10px auto; }
-            .form-section { padding: 25px 20px; border-radius: 16px; }
-            .preview-section { position: relative; top: 0; margin-bottom: 30px; align-self: center; }
+            .container { flex-direction: column; align-items: center; gap: 25px; padding: 15px; margin: 10px auto; }
+            .form-section { width: 100%; padding: 25px 20px;}
             .input-row { grid-template-columns: 1fr; gap: 0; }
-            .export-wrapper { padding: 10px; } 
-            .sticker-card { max-width: 100%; border-width: 6px; }
+            .preview-section { position: relative; top: 0; margin-bottom: 30px; align-self: center; width: 100%; } 
+            .sticker-card { transform: scale(0.85); margin-bottom: -50px; } 
+        }
+        @media (max-width: 400px) {
+            .sticker-card { transform: scale(0.75); margin-bottom: -100px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="auth-modal-overlay" id="authModalOverlay" onclick="closeAuthModal(event)">
-        <div class="auth-modal" id="authModal">
-            <i class="fa-solid fa-xmark auth-close" onclick="toggleAuthModal()"></i>
-            <h2>Welcome Back</h2>
-            <p>Sign in to save and manage your vehicle tags.</p>
-            
-            <button class="btn-google" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
-                Continue with Google
-            </button>
-            
-            <div class="auth-divider">Or</div>
-            
-            <input type="email" class="auth-input" id="authEmail" placeholder="Enter your email address">
-            <button class="btn-email-login" onclick="loginWithEmail()">
-                Send Login Link <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left:5px;"></i>
-            </button>
-        </div>
-    </div>
-
     <header>
         <div class="logo">SAMPARK<span>PRO</span></div>
-        
         <nav class="desktop-nav">
             <a href="#" class="nav-link">Why Sampark?</a>
             <a href="#" class="nav-link">How to Use</a>
-            <a class="nav-login-btn" onclick="toggleAuthModal()"><i class="fa-regular fa-user"></i> Login / Sign Up</a>
-            <a href="#" class="nav-create-btn"><i class="fa-solid fa-bolt"></i> Generate Tag</a>
+            <a href="#" class="nav-create-btn"><i class="fa-solid fa-bolt"></i> Generate Smart Tag</a>
         </nav>
-        
-        <div class="menu-toggle" onclick="toggleMenu()">
-            <i class="fa-solid fa-bars-staggered"></i>
-        </div>
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
     </header>
 
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
@@ -300,74 +161,61 @@
         </div>
         <a href="#" class="nav-link"><i class="fa-solid fa-shield-halved"></i> Why Sampark?</a>
         <a href="#" class="nav-link"><i class="fa-solid fa-mobile-screen"></i> How to Use</a>
-        <a class="nav-login-btn" onclick="toggleMenu(); toggleAuthModal();"><i class="fa-regular fa-user"></i> Login / Sign Up</a>
-        <a href="#" class="nav-create-btn"><i class="fa-solid fa-bolt"></i> Generate Tag</a>
+        <a href="#" class="nav-create-btn"><i class="fa-solid fa-bolt"></i> Generate Smart Tag</a>
     </div>
 
     <div class="container">
         <div class="form-section">
             <h1>Design Print Tag</h1>
-            <p>Add owner and emergency details. The physical sticker remains clean, while all contacts will be saved inside the QR for scanning.</p>
+            <p>Add owner and emergency details. The physical sticker remains clean.</p>
             
             <form id="proForm">
                 <div class="section-title">Owner Details</div>
                 <div class="input-row">
                     <div class="input-group">
                         <label>Registration Number</label>
-                        <div class="input-wrapper">
-                            <i class="field-icon fa-solid fa-car"></i>
-                            <input type="text" id="vehNumber" placeholder="MH 01 AB 1234" maxlength="15" oninput="this.value = this.value.toUpperCase(); updateLiveSticker();">
-                        </div>
-                        <div class="error-msg" id="err-veh">Please enter a valid number.</div>
+                        <div class="input-wrapper"><i class="field-icon fa-solid fa-car"></i><input type="text" id="vehNumber" placeholder="MH 01 AB 1234" maxlength="15" oninput="this.value = this.value.toUpperCase(); updateLiveSticker();"></div>
+                        <div class="error-msg" id="err-veh">Valid number required.</div>
                     </div>
                     <div class="input-group">
                         <label>Primary Owner Phone</label>
-                        <div class="input-wrapper">
-                            <i class="field-icon fa-solid fa-phone"></i>
-                            <input type="tel" id="callNumber" placeholder="9876543210" maxlength="10" oninput="clearError('phone')">
-                        </div>
+                        <div class="input-wrapper"><i class="field-icon fa-solid fa-phone"></i><input type="tel" id="callNumber" placeholder="9876543210" maxlength="10" oninput="clearError('phone'); updateLiveSticker();"></div>
                         <div class="error-msg" id="err-phone">Valid 10-digit number required.</div>
                     </div>
                 </div>
 
+                <div class="input-group">
+                    <label>Owner Email Address</label>
+                    <div class="input-wrapper"><i class="field-icon fa-solid fa-envelope"></i><input type="email" id="userEmail" placeholder="yourname@gmail.com" oninput="clearError('email'); updateLiveSticker();"></div>
+                    <div class="error-msg" id="err-email">Valid email is required.</div>
+                </div>
+
                 <div class="hidden-section" id="altOwnerBox">
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Alt Owner Phone 1 (Optional)</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-mobile-screen"></i><input type="tel" id="altOwner1" placeholder="Optional" maxlength="10"></div>
-                        </div>
-                        <div class="input-group">
-                            <label>Alt Owner Phone 2 (Optional)</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-mobile-screen"></i><input type="tel" id="altOwner2" placeholder="Optional" maxlength="10"></div>
-                        </div>
+                        <div class="input-group"><label>Alt Owner Phone 1</label><div class="input-wrapper"><i class="field-icon fa-solid fa-mobile-screen"></i><input type="tel" id="altOwner1" placeholder="Optional" maxlength="10"></div></div>
+                        <div class="input-group"><label>Alt Owner Phone 2</label><div class="input-wrapper"><i class="field-icon fa-solid fa-mobile-screen"></i><input type="tel" id="altOwner2" placeholder="Optional" maxlength="10"></div></div>
                     </div>
                 </div>
-                <div class="add-btn" id="btnAltOwner" onclick="toggleVisibility('altOwnerBox', 'btnAltOwner')"><i class="fa-solid fa-plus"></i> Add Alt Owner Numbers</div>
+                <div class="add-btn" id="btnAltOwner" onclick="toggleVisibility('altOwnerBox', 'btnAltOwner')"><i class="fa-solid fa-plus"></i> Add Alt Numbers</div>
 
                 <div class="section-title">Emergency Contacts (Max 3)</div>
+                
                 <div class="input-row">
                     <div class="input-group">
                         <label>Relative 1 Relation</label>
                         <div class="input-wrapper custom-dropdown-container">
                             <i class="field-icon fa-solid fa-user-group"></i>
-                            <div class="custom-dropdown-selected" id="customSelect1" onclick="toggleDropdown(1)">
-                                <span id="selectText1">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i>
-                            </div>
+                            <div class="custom-dropdown-selected" id="customSelect1" onclick="toggleDropdown(1)"><span id="selectText1">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i></div>
                             <div class="custom-dropdown-menu" id="customMenu1">
-                                <div onclick="selectOption('Wife', 1)">Wife</div><div onclick="selectOption('Husband', 1)">Husband</div>
-                                <div onclick="selectOption('Son', 1)">Son</div><div onclick="selectOption('Brother', 1)">Brother</div>
-                                <div onclick="selectOption('Father', 1)">Father</div><div onclick="selectOption('Custom', 1)">Custom...</div>
+                                <div onclick="selectOption('Father', 1)">Father</div><div onclick="selectOption('Mother', 1)">Mother</div>
+                                <div onclick="selectOption('Brother', 1)">Brother</div><div onclick="selectOption('Sister', 1)">Sister</div>
+                                <div onclick="selectOption('Husband', 1)">Husband</div><div onclick="selectOption('Wife', 1)">Wife</div>
+                                <div onclick="selectOption('Friend', 1)">Friend</div><div onclick="selectOption('Custom', 1)">Custom...</div>
                             </div>
                         </div>
                     </div>
-                    <div class="input-group" id="customRelBox1" style="display: none;">
-                        <label>Specify Relation 1</label>
-                        <div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel1" placeholder="E.g., Uncle"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Relative 1 Phone</label>
-                        <div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone1" placeholder="Optional" maxlength="10"></div>
-                    </div>
+                    <div class="input-group" id="customRelBox1" style="display: none;"><label>Specify Relation</label><div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel1" placeholder="E.g., Uncle"></div></div>
+                    <div class="input-group"><label>Relative 1 Phone</label><div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone1" placeholder="Optional" maxlength="10"></div></div>
                 </div>
 
                 <div class="hidden-section" id="relBox2">
@@ -376,24 +224,17 @@
                             <label>Relative 2 Relation</label>
                             <div class="input-wrapper custom-dropdown-container">
                                 <i class="field-icon fa-solid fa-user-group"></i>
-                                <div class="custom-dropdown-selected" id="customSelect2" onclick="toggleDropdown(2)">
-                                    <span id="selectText2">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i>
-                                </div>
+                                <div class="custom-dropdown-selected" id="customSelect2" onclick="toggleDropdown(2)"><span id="selectText2">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i></div>
                                 <div class="custom-dropdown-menu" id="customMenu2">
-                                    <div onclick="selectOption('Wife', 2)">Wife</div><div onclick="selectOption('Husband', 2)">Husband</div>
-                                    <div onclick="selectOption('Son', 2)">Son</div><div onclick="selectOption('Brother', 2)">Brother</div>
-                                    <div onclick="selectOption('Father', 2)">Father</div><div onclick="selectOption('Custom', 2)">Custom...</div>
+                                    <div onclick="selectOption('Father', 2)">Father</div><div onclick="selectOption('Mother', 2)">Mother</div>
+                                    <div onclick="selectOption('Brother', 2)">Brother</div><div onclick="selectOption('Sister', 2)">Sister</div>
+                                    <div onclick="selectOption('Husband', 2)">Husband</div><div onclick="selectOption('Wife', 2)">Wife</div>
+                                    <div onclick="selectOption('Friend', 2)">Friend</div><div onclick="selectOption('Custom', 2)">Custom...</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group" id="customRelBox2" style="display: none;">
-                            <label>Specify Relation 2</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel2" placeholder="E.g., Uncle"></div>
-                        </div>
-                        <div class="input-group">
-                            <label>Relative 2 Phone</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone2" placeholder="Optional" maxlength="10"></div>
-                        </div>
+                        <div class="input-group" id="customRelBox2" style="display: none;"><label>Specify Relation</label><div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel2" placeholder="E.g., Uncle"></div></div>
+                        <div class="input-group"><label>Relative 2 Phone</label><div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone2" placeholder="Optional" maxlength="10"></div></div>
                     </div>
                 </div>
 
@@ -403,32 +244,33 @@
                             <label>Relative 3 Relation</label>
                             <div class="input-wrapper custom-dropdown-container">
                                 <i class="field-icon fa-solid fa-user-group"></i>
-                                <div class="custom-dropdown-selected" id="customSelect3" onclick="toggleDropdown(3)">
-                                    <span id="selectText3">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i>
-                                </div>
+                                <div class="custom-dropdown-selected" id="customSelect3" onclick="toggleDropdown(3)"><span id="selectText3">Choose...</span><i class="fa-solid fa-chevron-down" style="color: #94a3b8; font-size: 14px;"></i></div>
                                 <div class="custom-dropdown-menu" id="customMenu3">
-                                    <div onclick="selectOption('Wife', 3)">Wife</div><div onclick="selectOption('Husband', 3)">Husband</div>
-                                    <div onclick="selectOption('Son', 3)">Son</div><div onclick="selectOption('Brother', 3)">Brother</div>
-                                    <div onclick="selectOption('Father', 3)">Father</div><div onclick="selectOption('Custom', 3)">Custom...</div>
+                                    <div onclick="selectOption('Father', 3)">Father</div><div onclick="selectOption('Mother', 3)">Mother</div>
+                                    <div onclick="selectOption('Brother', 3)">Brother</div><div onclick="selectOption('Sister', 3)">Sister</div>
+                                    <div onclick="selectOption('Husband', 3)">Husband</div><div onclick="selectOption('Wife', 3)">Wife</div>
+                                    <div onclick="selectOption('Friend', 3)">Friend</div><div onclick="selectOption('Custom', 3)">Custom...</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group" id="customRelBox3" style="display: none;">
-                            <label>Specify Relation 3</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel3" placeholder="E.g., Uncle"></div>
-                        </div>
-                        <div class="input-group">
-                            <label>Relative 3 Phone</label>
-                            <div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone3" placeholder="Optional" maxlength="10"></div>
-                        </div>
+                        <div class="input-group" id="customRelBox3" style="display: none;"><label>Specify Relation</label><div class="input-wrapper"><i class="field-icon fa-solid fa-pen"></i><input type="text" id="customRel3" placeholder="E.g., Uncle"></div></div>
+                        <div class="input-group"><label>Relative 3 Phone</label><div class="input-wrapper"><i class="field-icon fa-solid fa-address-book"></i><input type="tel" id="relPhone3" placeholder="Optional" maxlength="10"></div></div>
                     </div>
                 </div>
 
                 <div class="add-btn" id="btnRel" onclick="addRelativeBox()"><i class="fa-solid fa-plus"></i> Add Another Relative</div>
 
                 <button type="button" class="btn-generate" id="downloadBtn" onclick="processDownload()">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Download HD Sticker
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Generate & Download HD Tag
                 </button>
+
+                <div class="ui-message ui-success" id="successMsg"><i class="fa-solid fa-check-circle"></i> Saved Successfully! Tag downloaded.</div>
+                <div class="ui-message ui-error" id="errorMsg"><i class="fa-solid fa-triangle-exclamation"></i> Network Issue. Please try again.</div>
+
+                <div class="progress-container" id="progressBox">
+                    <div class="progress-text" id="progressText">Processing...</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+                </div>
             </form>
         </div>
 
@@ -442,14 +284,11 @@
                         <div class="qr-wrapper" id="qrcode"></div>
                         <div class="plate-container">
                             <div class="ind-strip"><span class="ind-text">IND</span><div class="ind-flag"></div></div>
-                            <div class="plate-number" id="plateDisplay">MH01AB1234</div>
+                            <div class="plate-number" id="plateDisplay">XXXX</div>
                         </div>
                     </div>
                     <div class="print-footer">
-                        <div class="footer-icons-row">
-                            <i class="fa-solid fa-ban"></i><i class="fa-solid fa-car-burst"></i>        
-                            <i class="fa-solid fa-truck-medical"></i><i class="fa-solid fa-qrcode"></i>           
-                        </div>
+                        <div class="footer-icons-row"><i class="fa-solid fa-ban"></i><i class="fa-solid fa-car-burst"></i><i class="fa-solid fa-truck-medical"></i><i class="fa-solid fa-qrcode"></i></div>
                         <div class="footer-alert-text">Wrong Parking, Emergency Contact,<br>any issue with vehicle, Scan the QR.</div>
                     </div>
                 </div>
@@ -457,27 +296,23 @@
         </div>
     </div>
 
+    <footer class="main-footer">
+        <p>Developed by <span>jamin.web</span></p>
+        <div class="social-icons">
+            <a href="https://instagram.com/your_insta" target="_blank" class="insta"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/your_whatsapp_number" target="_blank" class="wa"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+    </footer>
+
     <script>
-        // --- LOGIN MODAL LOGIC ---
-        function toggleAuthModal() {
-            document.getElementById('authModalOverlay').classList.toggle('active');
-        }
-        function closeAuthModal(event) {
-            if (event.target === document.getElementById('authModalOverlay')) {
-                toggleAuthModal();
-            }
-        }
+        // --- PUT YOUR APP SCRIPT URL HERE ---
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxaBmVNKHytK_XounRk2av_NHHngZmmybDOpcvnM57U6nVnKeGde9eYKpBrrgBewUg/exec';
 
-        // --- MOBILE MENU LOGIC ---
-        function toggleMenu() {
-            document.getElementById("sideMenu").classList.toggle("active");
-            document.getElementById("menuOverlay").classList.toggle("active");
-        }
+        // UNIQUE ID GENERATOR (Generates once per page load)
+        const uniqueId = 'SP-' + Math.random().toString(36).substr(2, 5).toUpperCase() + Date.now().toString(36).substr(5, 3).toUpperCase();
 
-        // 1. Initialize Modern Custom QR Code
         const qrCodeObj = new QRCodeStyling({
-            width: 190, height: 190,
-            data: "https://samparkpro.in/demo",
+            width: 200, height: 200, data: "",
             dotsOptions: { color: "#0f172a", type: "rounded" },
             cornersSquareOptions: { color: "#0f172a", type: "extra-rounded" },
             cornersDotOptions: { color: "#f59e0b", type: "dot" },
@@ -485,160 +320,134 @@
         });
         qrCodeObj.append(document.getElementById("qrcode"));
 
-        // 2. Form Logic (Visibility & Dropdowns)
-        function toggleVisibility(boxId, btnId) {
-            document.getElementById(boxId).style.display = 'block';
-            document.getElementById(btnId).style.display = 'none';
+        function toggleMenu() { 
+            document.getElementById("sideMenu").classList.toggle("active"); 
+            document.getElementById("menuOverlay").classList.toggle("active"); 
         }
 
+        function toggleVisibility(boxId, btnId) { document.getElementById(boxId).style.display = 'block'; document.getElementById(btnId).style.display = 'none'; }
+        
         let relCount = 1;
         function addRelativeBox() {
-            if(relCount === 1) { document.getElementById('relBox2').style.display = 'block'; relCount++; } 
+            if(relCount === 1) { document.getElementById('relBox2').style.display = 'block'; relCount++; }
             else if(relCount === 2) { document.getElementById('relBox3').style.display = 'block'; document.getElementById('btnRel').style.display = 'none'; relCount++; }
         }
 
         let selectedRelations = { 1: "", 2: "", 3: "" };
-        function toggleDropdown(id) {
-            for(let i=1; i<=3; i++) {
-                if(i !== id && document.getElementById("customMenu"+i)) {
-                    document.getElementById("customMenu"+i).classList.remove("active");
-                    document.getElementById("customSelect"+i).classList.remove("active");
-                }
-            }
-            document.getElementById("customMenu"+id).classList.toggle("active");
-            document.getElementById("customSelect"+id).classList.toggle("active");
-        }
-
+        function toggleDropdown(id) { document.getElementById("customMenu"+id).classList.toggle("active"); }
         function selectOption(value, id) {
             selectedRelations[id] = value;
             document.getElementById("selectText"+id).innerText = value;
-            document.getElementById("customSelect"+id).classList.add("has-value");
             document.getElementById("customMenu"+id).classList.remove("active");
-            document.getElementById("customSelect"+id).classList.remove("active");
-
-            let customBox = document.getElementById('customRelBox'+id);
-            if(value === "Custom") { customBox.style.display = "block"; document.getElementById('customRel'+id).focus(); } 
-            else { customBox.style.display = "none"; document.getElementById('customRel'+id).value = ""; }
+            document.getElementById('customRelBox'+id).style.display = value === "Custom" ? "block" : "none";
         }
-
+        
         document.addEventListener('click', function(event) {
-            if (!event.target.closest('.custom-dropdown-container')) {
+            let isDropdown = event.target.closest('.custom-dropdown-container');
+            if (!isDropdown) {
                 for(let i=1; i<=3; i++) {
                     let menu = document.getElementById("customMenu"+i);
-                    let sel = document.getElementById("customSelect"+i);
-                    if(menu && sel) { menu.classList.remove("active"); sel.classList.remove("active"); }
+                    if(menu) { menu.classList.remove("active"); }
                 }
             }
         });
 
-        // 3. Update Live Sticker
+        // UPDATE QR CODE WITH UNIQUE ID INSTEAD OF VEHICLE NUMBER
         function updateLiveSticker() {
-            let vehInput = document.getElementById('vehNumber');
-            let displayVal = vehInput.value.trim() === "" ? "MH01AB1234" : vehInput.value.replace(/\s+/g, '');
+            let vehInput = document.getElementById('vehNumber').value;
+            let displayVal = vehInput.trim() === "" ? "XXXX" : vehInput.replace(/\s+/g, '');
             document.getElementById('plateDisplay').innerText = displayVal;
-            qrCodeObj.update({ data: "https://samparkpro.in/qr/" + displayVal });
-            vehInput.classList.remove('error-border');
-            document.getElementById('err-veh').style.display = 'none';
+            
+            // Generate QR linking to the Unique ID
+            qrCodeObj.update({ data: vehInput.trim() === "" ? "" : "https://samparkpro.in/qr/" + uniqueId });
+            
+            document.getElementById('err-veh').style.display = 'none'; document.getElementById('vehNumber').classList.remove('error-border');
+        }
+        
+        function clearError(type) { document.getElementById(type==='email'?'userEmail':'callNumber').classList.remove('error-border'); document.getElementById(`err-${type}`).style.display='none'; }
+
+        function showUI(type) {
+            document.getElementById('successMsg').style.display = type === 'success' ? 'block' : 'none';
+            document.getElementById('errorMsg').style.display = type === 'error' ? 'block' : 'none';
         }
 
-        function clearError(type) {
-            document.getElementById(`callNumber`).classList.remove('error-border');
-            document.getElementById(`err-phone`).style.display = 'none';
-        }
-
-        // 4. Download HD PNG with Perfect Corner Masking
-        function processDownload() {
+        async function processDownload() {
             let vehNum = document.getElementById('vehNumber').value.trim();
             let phoneNum = document.getElementById('callNumber').value.trim();
+            let emailVal = document.getElementById('userEmail').value.trim();
             let isValid = true;
+            showUI('none');
 
             if(vehNum.length < 4) { document.getElementById('vehNumber').classList.add('error-border'); document.getElementById('err-veh').style.display = 'block'; isValid = false; }
             if(!/^[0-9]{10}$/.test(phoneNum)) { document.getElementById('callNumber').classList.add('error-border'); document.getElementById('err-phone').style.display = 'block'; isValid = false; }
+            if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { document.getElementById('userEmail').classList.add('error-border'); document.getElementById('err-email').style.display = 'block'; isValid = false; }
 
             if(!isValid) return;
 
             let btn = document.getElementById('downloadBtn');
-            let oldText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating Full HD...';
+            let progBox = document.getElementById('progressBox');
+            let progText = document.getElementById('progressText');
+            let progFill = document.getElementById('progressFill');
+
+            btn.style.display = 'none';
+            progBox.style.display = 'block';
+            progText.innerText = "Generating 4K HD Tag...";
+            progFill.style.width = "30%";
+
+            // Add uniqueId to formData
+            let formData = {
+                action: "save",
+                uniqueId: uniqueId, 
+                vehNumber: vehNum, 
+                primaryPhone: phoneNum, 
+                email: emailVal,
+                alt1: document.getElementById('altOwner1') ? document.getElementById('altOwner1').value : "",
+                alt2: document.getElementById('altOwner2') ? document.getElementById('altOwner2').value : "",
+                rel1Type: selectedRelations[1] === "Custom" ? document.getElementById('customRel1').value : selectedRelations[1],
+                rel1Phone: document.getElementById('relPhone1') ? document.getElementById('relPhone1').value : "",
+                rel2Type: selectedRelations[2] === "Custom" ? document.getElementById('customRel2').value : selectedRelations[2],
+                rel2Phone: document.getElementById('relPhone2') ? document.getElementById('relPhone2').value : "",
+                rel3Type: selectedRelations[3] === "Custom" ? document.getElementById('customRel3').value : selectedRelations[3],
+                rel3Phone: document.getElementById('relPhone3') ? document.getElementById('relPhone3').value : ""
+            };
 
             setTimeout(() => {
-                html2canvas(document.getElementById('cardElement'), { scale: 6, backgroundColor: null, useCORS: true }).then(canvas => {
-                    let finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = canvas.width; finalCanvas.height = canvas.height;
-                    let ctx = finalCanvas.getContext('2d');
+                html2canvas(document.getElementById('cardElement'), { scale: 5, backgroundColor: "transparent", useCORS: true }).then(async canvas => {
+                    let finalImage = canvas.toDataURL("image/png", 1.0);
+                    formData.imageStr = finalImage;
 
-                    let scale = 6; let radius = 18 * scale; let width = finalCanvas.width; let height = finalCanvas.height;
+                    progText.innerText = "Securing Data & Emailing...";
+                    progFill.style.width = "70%";
 
-                    ctx.beginPath();
-                    ctx.moveTo(radius, 0); ctx.lineTo(width - radius, 0); ctx.quadraticCurveTo(width, 0, width, radius);
-                    ctx.lineTo(width, height - radius); ctx.quadraticCurveTo(width, height, width - radius, height);
-                    ctx.lineTo(radius, height); ctx.quadraticCurveTo(0, height, 0, height - radius);
-                    ctx.lineTo(0, radius); ctx.quadraticCurveTo(0, 0, radius, 0); ctx.closePath();
-                    
-                    ctx.clip(); ctx.drawImage(canvas, 0, 0);
+                    const triggerDownload = () => {
+                        progText.innerText = "Downloading...";
+                        progFill.style.width = "100%";
+                        setTimeout(() => {
+                            let link = document.createElement('a'); link.href = finalImage; link.download = `SamparkPro_${vehNum.replace(/\s+/g, '')}_HD.png`;
+                            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                            progBox.style.display = 'none'; btn.style.display = 'flex'; showUI('success');
+                        }, 500);
+                    };
 
-                    let link = document.createElement('a');
-                    link.href = finalCanvas.toDataURL("image/png");
-                    link.download = `SamparkPro_${vehNum.replace(/\s+/g, '')}_HD.png`;
-                    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-                    
-                    btn.innerHTML = oldText;
-                }).catch(err => { alert("Download Error!"); btn.innerHTML = oldText; });
-            }, 300); 
-        }
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-        // TERA FIREBASE CONFIG (With Provided Keys)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBkgf3O5EW1rz4JPNe5uq6mY-insC3cCJ0",
-            authDomain: "samparkpro-6150e.firebaseapp.com",
-            projectId: "samparkpro-6150e",
-            storageBucket: "samparkpro-6150e.firebasestorage.app",
-            messagingSenderId: "633734419729",
-            appId: "1:633734419729:web:d1a83103fe84558d24e8b0",
-            measurementId: "G-2CPCWT2101"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        // 1. Google Login Function (Attached to window, gracefully handles popup closes)
-        window.loginWithGoogle = function() {
-            console.log("Login sequence initiated...");
-            signInWithPopup(auth, googleProvider)
-                .then((result) => {
-                    const user = result.user;
-                    console.log("Login Success:", user.email);
-                    
-                    toggleAuthModal();
-                    alert("Welcome " + user.displayName + "! Login successful.");
-                    
-                }).catch((error) => {
-                    // Suppress error if user simply closed the popup
-                    if(error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
-                        console.log("Login cancelled by user.");
+                    if(GOOGLE_SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' || GOOGLE_SHEET_URL === '') {
+                        triggerDownload();
                     } else {
-                        console.error("Login Failed:", error);
-                        alert("Login mein error aayi: " + error.message);
+                        try {
+                            let response = await fetch(GOOGLE_SHEET_URL, {
+                                method: 'POST', body: JSON.stringify(formData), headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                            });
+                            let result = await response.json();
+
+                            if(result.status === "success") {
+                                triggerDownload();
+                            } else { throw new Error("Internal Issue"); }
+                        } catch(e) {
+                            triggerDownload(); 
+                        }
                     }
                 });
-        }
-
-        // 2. Email Magic Link Function
-        window.loginWithEmail = function() {
-            const email = document.getElementById('authEmail').value;
-            if(!email) {
-                alert("Bhai, pehle email toh daal!");
-                return;
-            }
-            alert("Email link login Firebase console se setup karna baaki hai!");
+            }, 400); 
         }
     </script>
-
 </body>
 </html>

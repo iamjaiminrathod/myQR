@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Profile - Sampark Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background-color: #f1f5f9; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+    /* UI States */
+    .profile-card, .error-container { display: none; width: 100%; max-width: 420px; border-radius: 24px; overflow: hidden; }
+    .profile-card { background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+    .loader-container { text-align: center; padding: 50px 20px; width: 100%; max-width: 420px; }
+    .loader-container i { font-size: 40px; color: #f59e0b; margin-bottom: 15px; }
+    
+    .error-container { background: #fff; text-align: center; padding: 40px 20px; display: none; }
+    .error-container i { font-size: 50px; color: #ef4444; margin-bottom: 15px; }
+
+    /* Header */
+    .card-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px 20px; text-align: center; color: #ffffff; border-bottom: 5px solid #f59e0b; }
+    .brand { font-size: 16px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+    .brand span { color: #f59e0b; }
+    .veh-number { font-size: 32px; font-weight: 800; letter-spacing: 2px; }
+
+    /* Body & Buttons */
+    .card-body { padding: 25px 20px; }
+    .action-row { display: flex; gap: 15px; margin-bottom: 25px; }
+    .btn-action { flex: 1; padding: 15px; border-radius: 15px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.3s; color: #fff; text-align: center; }
+    .btn-call { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
+    .btn-wa { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3); }
+    .btn-action i { font-size: 24px; }
+    .btn-action:hover { transform: translateY(-3px); }
+
+    /* Emergency Section */
+    .section-title { font-size: 13px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+    .em-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+    .em-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .em-info { display: flex; align-items: center; gap: 12px; }
+    .em-info i { color: #ef4444; font-size: 18px; }
+    .em-name { font-weight: 700; color: #0f172a; font-size: 14px; }
+    .em-btn { background: #fee2e2; color: #ef4444; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; transition: 0.3s; }
+    .em-btn:hover { background: #ef4444; color: #fff; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.8); z-index: 3000; display: none; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #fff; width: 90%; max-width: 320px; border-radius: 20px; padding: 25px; text-align: center; }
+    .modal-box h3 { margin-bottom: 15px; color: #0f172a; font-size: 18px; }
+    .num-btn { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 12px; margin-bottom: 10px; background: #f1f5f9; color: #0f172a; font-weight: 600; text-decoration: none; border-radius: 10px; border: 1px solid #e2e8f0; transition: 0.3s; }
+    .num-btn i { color: #f59e0b; }
+    .num-btn:hover { background: #e2e8f0; }
+    .close-modal { margin-top: 10px; color: #ef4444; font-weight: 700; cursor: pointer; display: inline-block; padding: 5px 10px; }
+</style>
+    </head>
+<body>
+
+    <div class="loader-container" id="loadingUI">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <p>Fetching Vehicle Details...</p>
+    </div>
+
+    <div class="error-container" id="errorUI">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Tag Not Found</h3>
+        <p>This QR code does not exist in our database.</p>
+    </div>
+
+    <div class="profile-card" id="profileUI">
+        <div class="card-header">
+            <div class="brand">SAMPARK<span>PRO</span></div>
+            <div class="veh-number" id="dispVeh">XXXX</div>
+        </div>
+        
+        <div class="card-body">
+            <div class="action-row">
+                <div class="btn-action btn-call" onclick="openModal('call')">
+                    <i class="fa-solid fa-phone"></i> Call Owner
+                </div>
+                <div class="btn-action btn-wa" onclick="openModal('wa')">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </div>
+            </div>
+
+            <div class="section-title" id="familyTitle" style="display: none;">Family Emergency</div>
+            <div class="em-list" id="familyList"></div>
+
+            <div class="section-title">National Emergency</div>
+            <div class="em-list">
+                <div class="em-item">
+                    <div class="em-info"><i class="fa-solid fa-shield-halved"></i><span class="em-name">Police</span></div>
+                    <a href="tel:112" class="em-btn"><i class="fa-solid fa-phone"></i></a>
+                </div>
+                <div class="em-item">
+                    <div class="em-info"><i class="fa-solid fa-truck-medical"></i><span class="em-name">Ambulance</span></div>
+                    <a href="tel:108" class="em-btn"><i class="fa-solid fa-phone"></i></a>
+                </div>
+                <div class="em-item">
+                    <div class="em-info"><i class="fa-solid fa-fire-extinguisher"></i><span class="em-name">Fire Brigade</span></div>
+                    <a href="tel:101" class="em-btn"><i class="fa-solid fa-phone"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="numModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">Select Number</h3>
+            <div id="modalBtnList"></div>
+            <div class="close-modal" onclick="closeModal()">Cancel</div>
+        </div>
+    </div>
+
+    <script>
+    // TERA GOOGLE APPS SCRIPT URL YAHAN DAAL
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxVLTr-7AiLNVxoq4QsEio3_pf7vK7XatDn8hASw2Iy-5cq48tT-RJL0DXVbO_R2DxT/exec';
+
+    let ownerNumbers = []; 
+
+    window.onload = async () => {
+        // URL se Unique ID nikalna (e.g., scan.html?id=SP-XYZ123)
+        const urlParams = new URLSearchParams(window.location.search);
+        let tagId = urlParams.get('id');
+
+        if(!tagId) {
+            showError();
+            return;
+        }
+
+        try {
+            // Backend se data mangwana
+            let res = await fetch(`${GOOGLE_SHEET_URL}?action=getProfile&id=${tagId}`);
+            let result = await res.json();
+
+            if(result.found) {
+                setupProfile(result.data);
+            } else {
+                showError();
+            }
+        } catch(e) {
+            showError();
+        }
+    };
+
+    function setupProfile(data) {
+        document.getElementById('loadingUI').style.display = 'none';
+        document.getElementById('profileUI').style.display = 'block';
+
+        // Set Vehicle Number
+        document.getElementById('dispVeh').innerText = data.vehNumber;
+
+        // Store numbers for Call/WhatsApp
+        if(data.primaryPhone) ownerNumbers.push({ label: 'Primary Owner', num: data.primaryPhone });
+        if(data.alt1) ownerNumbers.push({ label: 'Owner Alt 1', num: data.alt1 });
+        if(data.alt2) ownerNumbers.push({ label: 'Owner Alt 2', num: data.alt2 });
+
+        // Setup Family Contacts
+        let famListHTML = "";
+        let hasFamily = false;
+
+        const addFamily = (type, phone) => {
+            if(type && phone) {
+                hasFamily = true;
+                famListHTML += `
+                <div class="em-item">
+                    <div class="em-info"><i class="fa-solid fa-user-group"></i><span class="em-name">${type}</span></div>
+                    <a href="tel:${phone}" class="em-btn"><i class="fa-solid fa-phone"></i></a>
+                </div>`;
+            }
+        };
+
+        addFamily(data.rel1Type, data.rel1Phone);
+        addFamily(data.rel2Type, data.rel2Phone);
+        addFamily(data.rel3Type, data.rel3Phone);
+
+        if(hasFamily) {
+            document.getElementById('familyTitle').style.display = 'block';
+            document.getElementById('familyList').innerHTML = famListHTML;
+        }
+    }
+
+    function showError() {
+        document.getElementById('loadingUI').style.display = 'none';
+        document.getElementById('errorUI').style.display = 'block';
+    }
+
+    // Modal Logic
+    function openModal(actionType) {
+        if(ownerNumbers.length === 1) {
+            // Agar ek hi number hai toh direct call ya whatsapp
+            triggerAction(actionType, ownerNumbers[0].num);
+        } else if(ownerNumbers.length > 1) {
+            // Agar ek se zyada hain toh Modal dikhao
+            let modalList = document.getElementById('modalBtnList');
+            modalList.innerHTML = "";
+            document.getElementById('modalTitle').innerText = actionType === 'call' ? 'Select Number to Call' : 'Select WhatsApp Number';
+
+            ownerNumbers.forEach(contact => {
+                let btn = document.createElement('a');
+                btn.className = 'num-btn';
+                btn.innerHTML = `<i class="fa-solid ${actionType === 'call' ? 'fa-phone' : 'fa-brands fa-whatsapp'}"></i> ${contact.label}`;
+                btn.onclick = () => { triggerAction(actionType, contact.num); closeModal(); };
+                modalList.appendChild(btn);
+            });
+
+            document.getElementById('numModal').classList.add('active');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('numModal').classList.remove('active');
+    }
+
+    function triggerAction(actionType, number) {
+        if(actionType === 'call') {
+            window.location.href = `tel:${number}`;
+        } else {
+            // WhatsApp link format
+            window.location.href = `https://wa.me/91${number}`;
+        }
+    }
+</script>
+    </body>
+</html>
